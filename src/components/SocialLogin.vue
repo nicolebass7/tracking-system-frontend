@@ -51,7 +51,7 @@ const handleCredentialResponse = async (response) => {
         router.push({ name: "" });
       }
       if(roleType.value == "admin") {
-        router.push({ name: "adminAccomList"})
+        router.push({ name: "addNewUser"})
       }
       
     })
