@@ -44,11 +44,14 @@ const handleCredentialResponse = async (response) => {
 
       console.log("roleType: ",roleType.value);
 
-      if(roleType.value == "student") {
-        router.push({ name: "agreement" });
+      if(roleType.value == "user") {
+        router.push({ name: "UserHomePage" });
       } 
+      if(roleType.value == "manager") {
+        router.push({ name: "ManagementHomePage" });
+      }
       if(roleType.value == "admin") {
-        router.push({ name: "adminAccomList"})
+        router.push({ name: "AdminHomePage"})
       }
       
     })
