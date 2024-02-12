@@ -22,19 +22,6 @@ const addUser = ref({
   departmentName:"",
   
 });
-// async function getaddUserInfo(){
-//   await addUserServices.getUserId(user.userId)
-//   .then((response) => {
-//     addUser.value.addUserIdFK = response.data[0].id;
-//     addUser.value.fName = response.data[0].fName;
-//     addUser.value.lName = response.data[0].lName;
-//     addUser.value.addUserId = response.data[0].addUserId;
-//     console.log('addUser', response.data[0])
-//     })
-//     .catch((e) => {
-//       message.value = e.response.data.message;
-//     });
-// }
 
 async function getAllDepartments(){
   await departmentServices.getAll()
@@ -68,7 +55,7 @@ async function saveUser() {
     .then((response) => {
       addUser.value.id = response.data.id;
       console.log("add " + response.data);
-      router.push({name: "Accommodations Background"})
+      router.push({name: "AdminHomePage"})
       
     })
     .catch((e) => {
@@ -78,7 +65,7 @@ async function saveUser() {
 
 
 const cancel = () => {
-  router.push({ name: "Accommodations Background" });
+  router.push({ name: "AdminHomePage" });
 };
 
 
