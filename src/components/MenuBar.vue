@@ -1,5 +1,5 @@
 <script setup>
-import ocLogo from "/oc-logo-white.png";
+import ocLogo from "/NewOCLogo.png";
 import { ref, onMounted } from "vue";
 import Utils from "../config/utils";
 import AuthServices from "../services/authServices";
@@ -7,7 +7,7 @@ import { useRouter } from "vue-router";
 
 
 const user = ref(null);
-const title = ref("Accommodations");
+const title = ref("Asset Tracking System");
 const initials = ref("");
 const name = ref("");
 const logoURL = ref("");
@@ -42,9 +42,9 @@ onMounted(() => {
 
 <template>
   <div>
-    <v-app-bar app>
+    <v-app-bar app style = "background-color:#811429">
 
-      <router-link :to="{ name: 'Accommodations Background' }">
+      <router-link :to="{ name: 'AdminHomePage' }">
         <v-img
           class="mx-2"
           :src="logoURL"
@@ -54,15 +54,17 @@ onMounted(() => {
         ></v-img>
       </router-link>
      
-      <v-toolbar-title class="title">
+      <v-toolbar-title>
         {{ title }}
+        
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <div v-if="user">
 
-        <v-btn v-if="user.roleType=='manager'" class="mx-2" :to="{ name: '' }"> About </v-btn>
-        <v-btn v-if="user.roleType=='manager'" class="mx-2" :to="{ name: '' }"> Make Request </v-btn>
-        <v-btn v-if="user.roleType=='admin'" class="mx-2" :to="{ name: 'addNewUser' }"> Add User </v-btn>
+        <v-btn v-if="user.roleType=='admin'" class="mx-2" :to="{ name: 'Accommodations Background' }"> Asset </v-btn>
+        <v-btn v-if="user.roleType=='admin'" class="mx-2" :to="{ name: 'request' }"> Reports </v-btn>
+        <v-btn v-if="user.roleType=='admin'" class="mx-2" :to="{ name: 'addNewUser' }"> addNewUser </v-btn>
+        <v-btn v-if="user.roleType=='admin'" class="mx-2" :to="{ name: 'editUser' }"> editUser </v-btn>
         
 
       </div>
