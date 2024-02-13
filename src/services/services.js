@@ -5,9 +5,9 @@ import Router from "../router.js";
 
 var baseurl = "";
 if (import.meta.env.DEV) {
-  baseurl = "http://localhost/asset-t5/";
+  baseurl = "http://localhost/asset/t5/";
 } else {
-  baseurl = "/asset-t5/";
+  baseurl = "/asset/t5/";
 }
 
 const apiClient = axios.create({

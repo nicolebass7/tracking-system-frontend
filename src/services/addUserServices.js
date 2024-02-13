@@ -25,6 +25,6 @@ export default {
     return apiClient.delete(`user`);
   },
   findByTitle(title) {
-    return apiClient.get(`addNewUser?title=${title}`);
+    return apiClient.get(`user?title=${title}`);
   },
 };
