@@ -170,7 +170,7 @@ export default {
             <v-select
                 label = "Filter"
                 variant = "plain"
-                :items = departments
+                
                 item-title = "name"
                 item-color = "#801529"
                 chips
@@ -178,6 +178,7 @@ export default {
                 multiple
                 center-affix
                 >
+                    
                 </v-select>
             <v-text-field
                 class="pa-6"
@@ -217,120 +218,3 @@ export default {
     </div>
         
 </template>
-
-
-
-    <!-- <v-container>
-        <v-card
-            class="mx-auto"
-            max-width="1100"
-        >
-            <v-toolbar 
-                    color="#801529"
-                    dense
-                    :elevation="8"
-                >
-                <v-toolbar-title>Users</v-toolbar-title>
-                <v-card-text>
-                    <b>{{ message }}</b> 
-                </v-card-text> 
-                <v-spacer></v-spacer>
-                <v-text-field 
-                    class="pa-6"
-                    v-model="keyword"
-                    prepend-inner-icon="mdi-magnify"
-                    label = "Search Users"
-                    variant="outlined"
-                    density="compact"
-                    hide-details
-                    single-line
-                    @click:prepend-inner="searchUser()"
-                    v-on:keyup.enter="searchUser()"
-                >
-            </v-text-field>
-            </v-toolbar>
-                   
-            
-            <template v-for="(user) in displayedUsers" : key="user.id">
-                
-                <v-card variant="outlined">
-                    <template v-slot:title >
-                        <p v-text = usersNames.get(user.id)></p>
-                    </template>
-                    <template v-slot:subtitle>
-                        {{user.category}}
-                    </template>
-                    <template v-slot:text>
-                        {{user.status}}
-                        <v-divider></v-divider>
-                        
-                    </template>
-                    <v-card-actions>
-                        <v-btn @click = "viewRequest(request)"
-                        prepend-icon = "mdi-pencil"
-                        >
-                        Review
-                    </v-btn>
-                    </v-card-actions>
-                </v-card>
-                </template>
-            <v-card color="#801529">
-                <v-card-title >
-                    Accepted Requests
-                </v-card-title>
-                </v-card>
-
-                <template v-for="(request) in acceptedRequests" : key="request.id">
-                
-                <v-card variant="outlined">
-                    <template v-slot:title >
-                        <p v-text=usersNames.get(request.studentId)></p>
-                    </template>
-                    <template v-slot:subtitle>
-                        {{request.category}}
-                    </template>
-                    <template v-slot:text>
-                        {{request.status}}
-                        <v-divider></v-divider>
-                        
-                    </template>
-                    <v-card-actions>
-                        <v-btn @click = "viewRequest(request)"
-                        prepend-icon = "mdiClipboard"
-                        >
-                        Review
-                    </v-btn>
-                    </v-card-actions>
-                </v-card>
-                </template>
-                <v-card color="#801529">
-                <v-card-title >
-                    Rejected Requests
-                </v-card-title>
-                </v-card>
-
-                <template v-for="(request) in rejectedRequests" : key="request.id">
-                
-                <v-card variant="outlined">
-                    <template v-slot:title >
-                        <p v-text=usersNames.get(request.studentId)></p>
-                    </template>
-                    <template v-slot:subtitle>
-                        {{request.category}}
-                    </template>
-                    <template v-slot:text>
-                        {{request.status}}
-                        <v-divider></v-divider>
-                        
-                    </template>
-                    <v-card-actions>
-                        <v-btn @click = "viewRequest(request)"
-                        prepend-icon = "mdiClipboard"
-                        >
-                        Review
-                    </v-btn>
-                    </v-card-actions>
-                </v-card>
-                </template> 
-        </v-card>
-    </v-container> -->
