@@ -52,7 +52,7 @@ onMounted(() => {
           width="50"
           contain
         ></v-img>
-      </router-link> -->
+      </router-link>
      
       <v-toolbar-title>
         {{ title }}
