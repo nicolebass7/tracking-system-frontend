@@ -1,12 +1,12 @@
 import { createRouter, createWebHistory } from "vue-router";
 
 import Login from "./views/Login.vue";
-import Agreement from "./views/AgreementPage.vue";
-import Accommodations from "./views/AccommodationsBackground.vue";
-import newRequest from "./views/newRequest.vue";
-import AdminMaintainUsers from "./views/AdminMaintainUsers.vue"
-import ViewRequest from "./views/ViewRequest.vue"
 
+import AdminMaintainUsers from "./views/AdminMaintainUsers.vue"
+import AdminHomePage from "./views/AdminHomePage.vue";
+import ManagementHomePage from "./views/ManagementHomePage.vue";
+import UserHomePage from "./views/UserHomePage.vue";
+import addNewUser from "./views/addNewUser.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -17,36 +17,35 @@ const router = createRouter({
       name: "login",
       component: Login,
     },
-
+    
     {
       path: "/adminMaintainUsers",
       name: "adminMaintainUsers",
       component: AdminMaintainUsers,
     },
     {
-      path: "/viewRequest:id",
-      name: "viewRequest",
-      component: ViewRequest,
-      props: true,
+      path: "/AdminHomePage",
+      name: "AdminHomePage",
+      component: AdminHomePage,
+
     },
     {
-      path: "/request",
-      name: "request",
-      component: newRequest,
-      props: true,
+      path: "/ManagementHomePage",
+      name: "ManagementHomePage",
+      component: ManagementHomePage,
+    },
+    {
+      path: "/UserHomePage",
+      name: "UserHomePage",
+      component: UserHomePage,
     },
 
     {
-      path: "/agreement",
-      name: "agreement",
-      component: Agreement,
-      
-    },
-    {
-      path: "/AccommodationsBackground",
-      name: "Accommodations Background",
-      component: Accommodations,
-    },
+    path: "/addNewUser",
+    name: "addNewUser",
+    component: addNewUser,
+    props: true,
+  },
     
   ],   
   

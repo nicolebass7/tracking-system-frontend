@@ -19,7 +19,5 @@ export default {
   deleteAll() {
     return apiClient.delete(`/department`);
   },
-//   findByTitle(title) {
-//     return apiClient.get(`/agreement?title=${title}`);
-//   },
+  
 };
