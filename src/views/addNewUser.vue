@@ -57,6 +57,7 @@ async function saveUser() {
       console.log("add " + response.data);
       router.push({name: "AdminHomePage"})
       
+      
     })
     .catch((e) => {
       message.value = e.response.data.message;
@@ -80,6 +81,8 @@ function OnInput() {
   this.style.height = 0;
   this.style.height = (this.scrollHeight) + "px";
 }
+
+
 
 onMounted(async () => {
   user.value = Utils.getStore("user");
@@ -130,61 +133,38 @@ onMounted(async () => {
         ></v-text-field> 
 
 
-<select v-model="addUser.roleType">
-  <option disabled value="">Select Role Type</option>
-  <option>Admin</option>
-  <option>Manager</option>
-  <option>User</option>
-</select><br><br>
 
-<v-select :items=departments v-model="addUser.departmentId"  item-value="id" item-title="name">
-  <option disabled value="">Select department</option>
+<v-select class="select" :items="['Admin','Manager','User']"  v-model="addUser.roleType" label="Select Role Type">
+ 
+</v-select>
 
-</v-select><br><br>
+
+<v-select class="select" :items=departments v-model="addUser.departmentId"  item-value="id" item-title="name" label="Select Department">
+ 
+</v-select>
 
    
         <v-btn
           :disabled="!valid"
           color="green"
           class="mr-4"
-          @click="saveUser"
+          @click="saveUser" 
         >
           Save
         </v-btn>
 
-        <v-btn color="white" class="mr-4" @click="cancel">Cancel</v-btn>
+
+        <v-btn  class="cancel" @click="cancel">Cancel</v-btn>
       </v-form>
     </v-container>
   </div>
 </template>
 <style scoped>
 
-  
-  select {
-  background-color: white;
-  border: thin solid grey;
-  border-radius: 4px;
-  display: inline-block;
-  font: inherit;
-  line-height: 20px;
-  padding: 8px 56px 8px 16px;
-  background-image:
-    linear-gradient(45deg, transparent 50%, gray 50%),
-    linear-gradient(135deg, gray 50%, transparent 50%),
-    linear-gradient(to right, #ccc, #ccc);
-  background-position:
-    calc(100% - 20px) 16px,
-    calc(100% - 15px) 16px,
-    calc(100% - 40px) 8px;
-  background-size:
-    5px 5px,
-    5px 5px,
-    1px 24px;
-  background-repeat: no-repeat;
- 
-}
 
-
-
+.select {
+      max-width: 400px;
+      
+    }
 
 </style>
