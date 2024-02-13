@@ -133,10 +133,10 @@ export default {
       headers: [
                 
                 { title: 'Name', align: 'start', key: 'fullName', sortable: false, width: '10%' },
-                { title: 'ID', align: 'end', key: 'schoolId', sortable: false, width: '10%'},
-                { title: 'Role', align: 'end', key: 'roleType', sortable: false, width: '35%'},
-                { title: 'Department', align: 'end', key: 'department', sortable: false, width: '10%' },
-                { title: 'Edit User', align: 'end', key: 'edit', sortable: false, width: '10%' },
+                { title: 'ID', align: 'center', key: 'schoolId', sortable: false, width: '10%'},
+                { title: 'Role', align: 'start', key: 'roleType', sortable: false, width: '35%'},
+                { title: 'Department', align: 'center', key: 'department', sortable: false, width: '10%' },
+                { title: 'Edit User', align: 'center', key: 'edit', sortable: false, width: '10%' },
             ],
     };
   }
@@ -167,6 +167,18 @@ export default {
                 class="pa-2"
             >
             <v-toolbar-title>Users</v-toolbar-title>
+            <v-select
+                label = "Filter"
+                variant = "plain"
+                :items = departments
+                item-title = "name"
+                item-color = "#801529"
+                chips
+                clearable
+                multiple
+                center-affix
+                >
+                </v-select>
             <v-text-field
                 class="pa-6"
                 v-model="keyword"
@@ -184,49 +196,15 @@ export default {
         </v-toolbar>
     </div>
     <div>
+
         <v-data-table-virtual
             :items = displayedUsers
             :headers = headers
-            density="compact"
-            height="400"
+            density="comfortable"
             fixed-header
         >
-        <!-- <template v-slot:headers=" { columns } "
-            
-        >
-        <tr
-           
-        >
-            <template v-for="column in columns" :key="column.key">
-            <td>
-                <span>{{ column.title }}</span>
-            
-            </td>
-            </template>
-        </tr>
-        </template> -->
 
-            <!--  <template v-slot:header.department>
-                <v-select
-                label = "Department"
-                variant = "plain"
-                density="compact"
-                :items = departments
-                item-title = "name"
-                item-color = "#801529"
-                chips
-                clearable
-                multiple
-                bg-color="white"
-                center-affix
-                > 
-                     <template v-slot:item="{departments, department}">
-                        <v-list-item>
-                            <v-btn v-bind="departments" v-text="name"></v-btn>
-                        </v-list-item>    
-                    </template>
-                </v-select>
-            </template> -->
+
             <template v-slot:item.edit>
                 <v-btn @click = "viewUser(user)"
                         prepend-icon = "mdi-pencil"
