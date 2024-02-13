@@ -61,10 +61,10 @@ onMounted(() => {
       <v-spacer></v-spacer>
       <div v-if="user">
 
-        <v-btn v-if="user.roleType=='admin'" class="mx-2" :to="{ name: 'Accommodations Background' }"> Asset </v-btn>
+        <!-- <v-btn v-if="user.roleType=='admin'" class="mx-2" :to="{ name: 'Accommodations Background' }"> Asset </v-btn>
         <v-btn v-if="user.roleType=='admin'" class="mx-2" :to="{ name: 'request' }"> Reports </v-btn>
         <v-btn v-if="user.roleType=='admin'" class="mx-2" :to="{ name: 'addNewUser' }"> addNewUser </v-btn>
-        <v-btn v-if="user.roleType=='admin'" class="mx-2" :to="{ name: 'editUser' }"> editUser </v-btn>
+        <v-btn v-if="user.roleType=='admin'" class="mx-2" :to="{ name: 'editUser' }"> editUser </v-btn> -->
         
 
       </div>
