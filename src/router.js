@@ -1,12 +1,12 @@
 import { createRouter, createWebHistory } from "vue-router";
 
 import Login from "./views/Login.vue";
+
+import AdminMaintainUsers from "./views/AdminMaintainUsers.vue"
 import AdminHomePage from "./views/AdminHomePage.vue";
 import ManagementHomePage from "./views/ManagementHomePage.vue";
 import UserHomePage from "./views/UserHomePage.vue";
 import addNewUser from "./views/addNewUser.vue";
-
-
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -19,9 +19,15 @@ const router = createRouter({
     },
     
     {
+      path: "/adminMaintainUsers",
+      name: "adminMaintainUsers",
+      component: AdminMaintainUsers,
+    },
+    {
       path: "/AdminHomePage",
       name: "AdminHomePage",
       component: AdminHomePage,
+
     },
     {
       path: "/ManagementHomePage",
