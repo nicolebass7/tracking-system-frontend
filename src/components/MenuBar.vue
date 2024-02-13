@@ -44,7 +44,7 @@ onMounted(() => {
   <div>
     <v-app-bar app>
 
-      <router-link :to="{ name: 'Accommodations Background' }">
+      <!-- <router-link :to="{ name: 'Accommodations Background' }">
         <v-img
           class="mx-2"
           :src="logoURL"
@@ -52,7 +52,7 @@ onMounted(() => {
           width="50"
           contain
         ></v-img>
-      </router-link>
+      </router-link> -->
      
       <v-toolbar-title class="title">
         {{ title }}
@@ -60,10 +60,10 @@ onMounted(() => {
       <v-spacer></v-spacer>
       <div v-if="user">
 
-        <v-btn v-if="user.roleType=='student'" class="mx-2" :to="{ name: 'Accommodations Background' }"> About </v-btn>
+        <!-- <v-btn v-if="user.roleType=='student'" class="mx-2" :to="{ name: 'adminMaintainUsers' }"> About </v-btn>
         <v-btn v-if="user.roleType=='student'" class="mx-2" :to="{ name: 'request' }"> Make Request </v-btn>
         <v-btn v-if="user.roleType=='admin'" class="mx-2" :to="{ name: 'adminAccomList' }"> Requests </v-btn>
-        
+         -->
 
       </div>
       <v-menu bottom min-width="200px" rounded offset-y v-if="user">

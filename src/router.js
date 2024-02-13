@@ -4,7 +4,7 @@ import Login from "./views/Login.vue";
 import Agreement from "./views/AgreementPage.vue";
 import Accommodations from "./views/AccommodationsBackground.vue";
 import newRequest from "./views/newRequest.vue";
-import AdminAccomList from "./views/AdminAccomList.vue"
+import AdminMaintainUsers from "./views/AdminMaintainUsers.vue"
 import ViewRequest from "./views/ViewRequest.vue"
 
 
@@ -19,9 +19,9 @@ const router = createRouter({
     },
 
     {
-      path: "/adminAccomList",
-      name: "adminAccomList",
-      component: AdminAccomList,
+      path: "/adminMaintainUsers",
+      name: "adminMaintainUsers",
+      component: AdminMaintainUsers,
     },
     {
       path: "/viewRequest:id",
