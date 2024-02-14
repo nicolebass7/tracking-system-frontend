@@ -1,11 +1,12 @@
 <script setup>
 import { ref, onMounted } from "vue";
-
+import PersonServices from "../services/personServices";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
 const valid = ref(false);
-const Person = ref({});
+const persons = ref({});
+const message = ref({});
 
 
 const props = defineProps({
@@ -16,7 +17,7 @@ const props = defineProps({
 
 
 const exit = () => {
-  router.push({ name: "exit" });
+  router.push({ name: "ManagementHomePage" });
 };
 
 async function retrievePerson(){
@@ -38,12 +39,13 @@ onMounted(async () => {
   <div>
     <v-container>
       <v-toolbar>
-        <v-toolbar-title>History</v-toolbar-title>
+        <v-toolbar-title>{{ persons.fName }} {{ persons.lName }}</v-toolbar-title>
       </v-toolbar>
       <br />
-     
+      
       <br />
      
+    
 
         <v-btn color="error" class="mr-4" @click="exit()"> Exit </v-btn>
      
