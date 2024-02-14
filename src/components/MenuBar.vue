@@ -42,7 +42,7 @@ onMounted(() => {
 
 <template>
   <div>
-    <v-app-bar app style = "background-color:#811429">
+    <v-app-bar app style = "background-color:#811429; color:white">
 
       <router-link :to="{ name: 'AdminHomePage' }">
         <v-img
