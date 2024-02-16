@@ -7,7 +7,7 @@ const router = useRouter();
 const valid = ref(false);
 const persons = ref({});
 const message = ref({});
-
+const tab = ref(null)
 
 const props = defineProps({
   id: {
@@ -44,19 +44,28 @@ onMounted(async () => {
       <br />
       
       <br />
+      <v-card>
+        <v-tabs
+          v-model="tab"
+          bg-color="primary"
+        >
+          <v-tab value="one">Current Assets</v-tab>
+          <v-tab value="two">Past Assets</v-tab>
+        </v-tabs>
 
-      <div>
-        <b-card no-body>
-          <b-tabs card>
-            <b-tab title="Tab 1" active>
-              <b-card-text>Tab contents 1</b-card-text>
-            </b-tab>
-            <b-tab title="Tab 2">
-              <b-card-text>Tab contents 2</b-card-text>
-            </b-tab>
-          </b-tabs>
-        </b-card>
-      </div>    
+        <v-card-text>
+          <v-window v-model="tab">
+            <v-window-item value="one">
+              One
+            </v-window-item>
+
+            <v-window-item value="two">
+              Two
+            </v-window-item>
+
+          </v-window>
+        </v-card-text>
+      </v-card>   
      
     
       <br />
