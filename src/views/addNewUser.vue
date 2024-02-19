@@ -19,7 +19,7 @@ const addUser = ref({
   roleType: "",
   schoolId: "",
   departmentId: "",
-  departmentName:"",
+  
   
 });
 

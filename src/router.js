@@ -7,6 +7,7 @@ import AdminHomePage from "./views/AdminHomePage.vue";
 import ManagementHomePage from "./views/ManagementHomePage.vue";
 import UserHomePage from "./views/UserHomePage.vue";
 import addNewUser from "./views/addNewUser.vue";
+import checkoutAsset from "./views/checkoutAsset.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -46,6 +47,13 @@ const router = createRouter({
     component: addNewUser,
     props: true,
   },
+
+  {
+    path: "/checkoutAsset",
+    name: "checkoutAsset",
+    component: checkoutAsset,
+  },
+
     
   ],   
   
