@@ -125,7 +125,7 @@ v-data-table-virtual-header {
 </style>
 <template>
     <br>
-    <h2>View People's Assets</h2>
+    
     <v-snackbar v-model="snackbar">
         No results for {{ keyword }}
         <template v-slot:actions>
@@ -141,20 +141,18 @@ v-data-table-virtual-header {
         max-width="1000"
         >
      
-            <v-card-item>
-            <v-toolbar  class="pa-6 ma-3" color="white" density="prominent" height="15">
+            <v-app-bar class="pa-6 mx-auto" color="white" density="prominent" height="15" :elevation="2" flat>
+              <v-app-bar-title>View People's Assets</v-app-bar-title>
                 <v-text-field class="mx-auto" v-model="keyword"  prepend-inner-icon="mdi-magnify" label="Search by name or ID"
                     variant="outlined" density="compact" single-line rounded
                     @click:prepend-inner="searchPerson()" v-on:keyup.enter="searchPerson()">
                 </v-text-field>
             
-        </v-toolbar> 
+        </v-app-bar> 
 
-        </v-card-item>
-        </v-card>
-    </div>
-     <div>
-
+       
+        <v-card class="pa-6 mx-6">
+            <v-card-item max-width="1250px" location="center" >
         <v-data-table-virtual :items=displayedPersons :headers=headers density="comfortable" fixed-header>
 
            <template v-slot:item.view = "{ item }">
@@ -164,6 +162,9 @@ v-data-table-virtual-header {
             </template>
 
         </v-data-table-virtual>
+    </v-card-item>
+    </v-card>
+    </v-card>
     </div> 
 
 </template> 
