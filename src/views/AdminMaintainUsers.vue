@@ -22,6 +22,9 @@ const snackbar = ref(false);
 const roles = ref([]);
 const selectedRoles = ref([]);
 const selectedDepartments = ref([]);
+const roleChangeConfirm = ref(false);
+const confirmRole = ref("");
+const changeRoleUser = ref("");
 
 function searchUser() {
     displayedUsers.value = [];
@@ -118,6 +121,50 @@ function searchUserName(search) {
     return returnArr;
 }
 
+function confirmChangeRole(item, roleType){
+    roleChangeConfirm.value = true;
+    confirmRole.value = roleType;
+    changeRoleUser.value = item;
+
+
+}
+async function cancelConfirm(){
+    await retrieveUsers()
+    .then(() =>{
+        filter();
+        roleChangeConfirm.value= false;
+    })
+}
+async function changeRole() {
+    const requestData ={
+        roleType: confirmRole.value.toLowerCase(),
+    }
+    console.log(changeRoleUser.value.id)
+    console.log(requestData)
+    await userServices.update(changeRoleUser.value.id, requestData)
+    .then(() => {
+        roleChangeConfirm.value = false;
+        roles.value = [];
+        users.value.forEach(user => {
+            if(!roles.value.includes(user.roleType)){
+                roles.value.push(user.roleType);
+            }
+        })
+        for(var i=0; i < selectedRoles.value.length; i++){
+            if(!roles.value.includes(selectedRoles.value[i])){
+                selectedRoles.value.splice(i, 1);
+            };
+        }
+        filter();
+        
+    })
+    .catch((e) =>{
+        message.value = e.response;
+
+    });
+   // roleChangeConfirm.value = false;
+    
+}
 
 async function retrieveUsers() {
     await userServices.getAll()
@@ -183,6 +230,7 @@ onMounted(
     async () => {
         await retrieveUsers();
         await retriveDepartments();
+        
     });
 
 
@@ -194,11 +242,18 @@ export default {
         return {
             headers: [
 
-                { title: 'Name', align: 'start', key: 'fullName' , width: '10%' },
-                { title: 'ID', align: 'center', key: 'schoolId', sortable: false, width: '10%' },
-                { title: 'Role', align: 'start', key: 'roleType', sortable: false, width: '35%' },
-                { title: 'Department', align: 'center', key: 'department', sortable: false, width: '10%' },
-                { title: 'Edit User', align: 'center', key: 'edit', sortable: false, width: '10%' },
+                { title: 'Name', align: 'start', key: 'fullName' , width: '30%' },
+                { title: 'Role', align: 'center', key: 'roleType', width: '15%' },
+                { title: 'ID', align: 'center', key: 'schoolId', sortable: false, width: '25%' },
+                { title: 'Department', align: 'center', key: 'department', width: '30%' },
+               // { title: 'Change Role', align: 'center', key: 'edit', sortable: false, width: '15%' },
+            ],
+            roleChoices: [
+
+                'admin',
+                'manager',
+                'user',
+                'inactive',
             ],
             filterCats: [
                 { title: "Departments" },
@@ -211,9 +266,7 @@ export default {
 };
 </script>
 <style>
-v-data-table-virtual-header {
-    height: 1000px;
-}
+    
 </style>
 <template>
     <v-snackbar v-model="snackbar">
@@ -225,16 +278,21 @@ v-data-table-virtual-header {
         </template>
     </v-snackbar>
     <div>
-        <v-card
-        class="mx-auto"
-        flat    
-        max-width="1000"
-        >
+        
+   
+        
         <!-- <v-toolbar color="#801529" dense :elevation="8" class="pa-3">
             <v-toolbar-title>Users</v-toolbar-title> -->
-            <v-card-item>
-            <v-toolbar  class="pa-6 ma-3" color="white" density="prominent" height="15">
-                <v-text-field class="mx-auto" v-model="keyword"  prepend-inner-icon="mdi-magnify" label="Search by name or ID"
+            
+    
+        <v-card
+        class="mx-auto pa-6"
+        flat
+        max-width="1250px">
+            <v-app-bar  class="pa-6 mx-auto" color="white" density="prominent" height="15" :elevation="2" flat>
+        
+                <v-app-bar-title>User List</v-app-bar-title>
+                <v-text-field class="mx-auto" bg-color="white" v-model="keyword"  prepend-inner-icon="mdi-magnify" label="Search by name or ID"
                     variant="outlined" density="compact" single-line rounded
                     @click:prepend-inner="searchUser()" v-on:keyup.enter="searchUser()">
                 </v-text-field>
@@ -242,7 +300,7 @@ v-data-table-virtual-header {
                     
                 >
                 <template v-slot:activator="{ props }">
-                    <v-btn class="mx-6" height="40" v-bind="props" color="#801529" variant="elevated">
+                    <v-btn class="mx-6" height="40" v-bind="props" color="#811429" variant="elevated">
                         Filters
                     </v-btn>
                 </template>
@@ -260,23 +318,60 @@ v-data-table-virtual-header {
                     </v-list>
                 </v-card>
             </v-menu>
-        </v-toolbar> 
+       
+    
+    </v-app-bar>
+    
 
-        </v-card-item>
-        <!-- </v-toolbar> -->
-        </v-card>
-    </div>
-    <div>
-
+  
+    <v-card class="pa-6 mx-6">
+      
+      
+        <v-card-item max-width="1250px" location="center">
         <v-data-table-virtual :items=displayedUsers :headers=headers density="comfortable" fixed-header>
 
 
-            <template v-slot:item.edit>
-                <v-btn @click="viewUser(user)" prepend-icon="mdi-pencil">
+            <template v-slot:item.roleType ="{ item }">
+                <v-select v-model= item.roleType
+                 :items="roleChoices" @update:modelValue="confirmChangeRole(item, item.roleType)" variant="plain">
 
-                </v-btn>
+                </v-select>
             </template>
 
         </v-data-table-virtual>
+        </v-card-item>
+    </v-card>
+</v-card>
+
+
     </div>
+
+    <v-overlay
+        v-model="roleChangeConfirm"
+        class="align-center justify-center"
+      >
+        <v-card class="pa-6">
+            <v-card-title>Confirm change of {{ changeRoleUser.fullName }} to {{ confirmRole }} role</v-card-title>
+            <v-card-actions>
+            <v-btn @click="changeRole()"
+            class="mx-6"
+            variant="flat"
+            color="green"
+            min-width="150"
+            min-height="40"
+            >
+                Confirm
+            </v-btn>
+            <v-btn
+            @click="cancelConfirm()"
+            class="mx-6"
+            variant="outlined"
+            min-width="150"
+            min-height="40"
+            >
+                Cancel
+            </v-btn>
+        </v-card-actions>
+        </v-card>
+      </v-overlay>
 </template>
