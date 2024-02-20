@@ -119,45 +119,15 @@ const selectedDepartments = ref([]);
 // }
 
 
-async function retrieveAsset() {
-    await specificAssetServices.getAll()
-        .then(async (response) => {
-            specificAssets.value = response.data;
-            specificAssets.value.forEach(async element => {
-                console.log(element);
-                if (element.assetId != null) {
-                    retrieveSpecificAssets(element);
-                }
-            });
-            specificAsset.value.forEach(user => {
-                displayedSpecificAsset.value.push(specificAssets);
-                if (!roles.value.includes(user.roleType))
-                    roles.value.push(user.roleType);
-
-            })
-            
-            console.log(displayedSpecificAsset);
-
-
-
-        })
-        .catch((e) => {
-            message.value = e.response.data.message;
-
-        });
-
-
-};
-
 
 async function retrieveSpecificAssets(specificAssets) {
-    await specificAssetServices.get(specificAssets.assetId)
+    await specificAssetServices.getAll()
         .then((response) => {
-            specificAssets.asset = response.data.id;
-            console.log("assetId " + specificAssets.asset)
+            specificAssets = response.data;
+            
         })
         .catch((e) => {
-            message.value = e.response.data.message;
+            message.value = e.data.message;
         })
 
 };
@@ -179,7 +149,7 @@ async function retriveBuilding() {
 
 onMounted(
     async () => {
-        await retrieveAsset();
+        await retrieveSpecificAssets();
         await retriveBuilding();
     });
 
@@ -192,8 +162,8 @@ export default {
         return {
             headers: [
 
-                { title: 'Name', align: 'start', key: 'fullName' , width: '10%' },
-                { title: 'Asset Type', align: 'center', key: 'schoolId', sortable: false, width: '10%' },
+                { title: 'id', align: 'start', key: 'id' , width: '10%' },
+                { title: 'Asset Type', align: 'center', key: 'asset.name', sortable: false, width: '10%' },
                 { title: 'Building', align: 'start', key: 'building', sortable: false, width: '35%' },
                 { title: 'Room', align: 'center', key: 'department', sortable: false, width: '10%' },
                 { title: 'Asset Details', align: 'center', key: 'edit', sortable: false, width: '10%' },

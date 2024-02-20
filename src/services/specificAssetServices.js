@@ -2,7 +2,7 @@ import apiClient from "./services.js";
 
 export default {
   getAll() {
-    return apiClient.get("/specificAsset");
+    return apiClient.get("/specificAsset/");
   },
   get(id) {
     return apiClient.get(`/specificAsset/${id}`);
