@@ -8,6 +8,7 @@ import ManagementHomePage from "./views/ManagementHomePage.vue";
 import UserHomePage from "./views/UserHomePage.vue";
 import addNewUser from "./views/addNewUser.vue";
 import PersonHistory from "./views/PersonHistory.vue";
+import PersonList from "./views/PersonList.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -53,7 +54,14 @@ const router = createRouter({
       name: "PersonHistory",
       component: PersonHistory,
       props: true,
-      },
+    },
+
+    {
+      path: "/PersonList",
+      name: "PersonList",
+      component: PersonList,
+      props: true,
+    },
     
   ],   
   
