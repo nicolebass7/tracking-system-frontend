@@ -16,19 +16,21 @@ const props = defineProps({
 });
 
 
-const exit = () => {
-  router.push({ name: "ManagementHomePage" });
+const back = () => {
+  router.push({ name: "PersonList" });
 };
 
 async function retrievePerson(){
   await PersonServices.get(props.id)
   .then((response) => {
-    Person.value = response.data;
+    persons.value = response.data;
   })
   .catch((e) => {
     message.value = e.response.data.message;
   });
 };
+
+
 
 onMounted(async () => {
   await retrievePerson();
@@ -69,7 +71,7 @@ onMounted(async () => {
      
     
       <br />
-        <v-btn color="error" class="mr-4" @click="exit()"> Exit </v-btn>
+        <v-btn color="error" class="mr-4" @click="back()"> Back </v-btn>
      
     </v-container>
     

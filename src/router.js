@@ -50,7 +50,7 @@ const router = createRouter({
     },
 
     {
-      path: "/PersonHistory",
+      path: "/PersonHistory:id",
       name: "PersonHistory",
       component: PersonHistory,
       props: true,
