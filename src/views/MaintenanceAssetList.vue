@@ -124,6 +124,7 @@ async function retrieveSpecificAssets(specificAssets) {
     await specificAssetServices.getAll()
         .then((response) => {
             specificAssets = response.data;
+            console.log(response.data);
             
         })
         .catch((e) => {
@@ -165,12 +166,12 @@ export default {
                 { title: 'id', align: 'start', key: 'id' , width: '10%' },
                 { title: 'Asset Type', align: 'center', key: 'asset.name', sortable: false, width: '10%' },
                 { title: 'Building', align: 'start', key: 'building', sortable: false, width: '35%' },
-                { title: 'Room', align: 'center', key: 'department', sortable: false, width: '10%' },
+                { title: 'Room', align: 'center', key: 'room', sortable: false, width: '10%' },
                 { title: 'Asset Details', align: 'center', key: 'edit', sortable: false, width: '10%' },
             ],
             filterCats: [
-                { title: "Departments" },
-                { title: "Role Type" },
+                { title: "Asset Type" },
+                { title: "Building" },
             ],
 
 
