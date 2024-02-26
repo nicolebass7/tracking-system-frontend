@@ -6,7 +6,7 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 const valid = ref(false);
 const user = Utils.getStore("user");
-const departments = ref([]);
+//const departments = ref([]);
 const message = ref("");
 console.log('user', user.userId);
 
@@ -86,7 +86,7 @@ function OnInput() {
 
 onMounted(async () => {
   user.value = Utils.getStore("user");
-  await getAllDepartments();
+  //await getAllDepartments();
   
 });
 </script>
@@ -116,7 +116,7 @@ onMounted(async () => {
           v-model="saveInfo.name"
           id="name"
           :counter="50"
-          label="First and Last Name "
+          label="Name"
           required
         ></v-text-field></v-col>
         <v-col
@@ -166,16 +166,18 @@ onMounted(async () => {
 
 
 <v-select class="select" :items=departments v-model="saveInfo.AssetType"  item-value="id" item-title="name" label="AssetType">
-
-
  
 </v-select>
+<v-col
+          cols="12"
+          sm="6"
+        >
 <v-checkbox
             v-model="ex4"
             label="Return Asset"
             value="ReturnAsset"
             hide-details
-          ></v-checkbox>
+          ></v-checkbox></v-col>
 
 </v-row>   </v-responsive>
 
