@@ -8,6 +8,7 @@ import ManagementHomePage from "./views/ManagementHomePage.vue";
 import UserHomePage from "./views/UserHomePage.vue";
 import addNewUser from "./views/addNewUser.vue";
 import MaintenanceAssetList from "./views/MaintenanceAssetList.vue";
+import MaintenanceEditAsset from "./views/MaintenanceEditAsset.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -51,6 +52,11 @@ const router = createRouter({
     path: "/maintenanceAssetList",
     name: "maintenanceAssetList",
     component: MaintenanceAssetList,
+  },
+  {
+    path: "/maintenanceEditAsset:/id",
+    name: "maintenanceEditAsset",
+    component: MaintenanceEditAsset,
   },
     
   ],   

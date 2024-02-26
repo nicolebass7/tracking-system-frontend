@@ -19,7 +19,7 @@ const managerUsers = ref([]);
 const message = ref("");
 const keyword = ref("");
 const snackbar = ref(false);
-const roles = ref([]);
+const specificAssets = ref([]);
 const selectedRoles = ref([]);
 const selectedDepartments = ref([]);
 
@@ -126,12 +126,23 @@ async function retrieveSpecificAssets(specificAssets) {
             specificAssets = response.data;
             console.log(response.data);
             
+        
+        specificAssets.value.forEach(specificAssets => {
+                displayedSpecificAsset.value.push(specificAssets);
+                
+
+            })
+            console.log(displayedSpecificAsset);
+
+
+
         })
         .catch((e) => {
-            message.value = e.data.message;
-        })
+            message.value = e.response.data.message;
 
-};
+        });
+
+    }
 
 async function retriveBuilding() {
     await buildingServices.getAll()
@@ -146,7 +157,10 @@ async function retriveBuilding() {
 
 }
 
-
+const viewDetails = (specificAsset) => {
+    console.log(specificAsset)
+    router.push({name: "MaintenanceEditAsset", params: { id: specificAsset.id}});
+}
 
 onMounted(
     async () => {
@@ -218,7 +232,7 @@ v-data-table-virtual-header {
                 <v-card min-width="300">
                     <v-list>
                         <v-list-item v-for="(item, index) in filterCats" :key="index">
-                            <v-select v-if="item.title == 'Departments'" v-model="selectedDepartments" label="Department"
+                            <v-select v-if="item.title == 'id'" v-model="selectedDepartments" label="id"
                                 :items="departments" item-title="name" @update:modelValue="filter()" multiple>
                             </v-select>
                             <v-select v-model="selectedRoles" v-if="item.title == 'building'" @update:modelValue="filter()" label="building" :items="roles"
@@ -240,11 +254,11 @@ v-data-table-virtual-header {
         <v-data-table-virtual :items=displayedSpecificAsset :headers=headers density="comfortable" fixed-header>
 
 
-            <!-- <template v-slot:item.edit>
-                <v-btn @click="viewUser(user)" prepend-icon="mdi-pencil">
+            <template v-slot:item.edit  = "{ item }">
+                <v-btn @click="viewDetails(item)" prepend-icon="mdi-pencil">
 
                 </v-btn>
-            </template> -->
+            </template>
 
         </v-data-table-virtual>
     </div>
