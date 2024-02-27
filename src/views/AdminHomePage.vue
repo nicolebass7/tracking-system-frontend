@@ -15,7 +15,9 @@ function directpage(name){
     router.push({ path: "adminMaintainUsers" });
   } else if (name === 'Asset List'){
     router.push({ path: "AssetList"});
-  }
+  } else if (name === 'Person List'){
+    router.push({ path: "PersonList" });
+}
 }
 
 </script>
