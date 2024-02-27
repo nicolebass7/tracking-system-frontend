@@ -64,8 +64,6 @@ const router = createRouter({
     component: addAsset,
   },
 
-    },
-
     {
       path: "/PersonHistory:id",
       name: "PersonHistory",

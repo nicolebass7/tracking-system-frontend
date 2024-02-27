@@ -14,12 +14,12 @@ function directpage(name){
     router.push({ path: "addNewUser" });
   } else if (name === 'Maintain Users') {
     router.push({ path: "adminMaintainUsers" });
-  } else if (name === 'Assets'){
+  } else if (name === 'Asset List'){
     router.push({ path: "AssetList"});
   } else if (name === 'Person List'){
     router.push({ path: "PersonList" });
 }
-
+}
 </script>
 
 <template>
@@ -72,7 +72,7 @@ function directpage(name){
 <script>
 export default {
   data() {
-    return {
+    return{
       buttons: ['Asset List', 'Person List', 'Maintain Users','Add Users', 'Reports']
     };
   }
