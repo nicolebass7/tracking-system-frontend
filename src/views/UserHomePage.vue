@@ -10,12 +10,8 @@ const user = Utils.getStore("user");
 
 function directpage(name){
 
-  if(name === 'Add Users'){
-    router.push({ path: "addNewUser" });
-  } else if (name === 'Maintain Users') {
-    router.push({ path: "adminMaintainUsers" });
-  } else if (name === 'Asset'){
-    router.push({ path: "AssetList"});
+  if(name === 'Asset List'){
+    router.push({ path: "AssetList" });
   } else if (name === 'Person List'){
     router.push({ path: "PersonList" });
   }
@@ -74,7 +70,7 @@ function directpage(name){
 export default {
   data() {
     return {
-      buttons: ['Asset', 'Person List']
+      buttons: ['Asset List', 'Person List']
     };
   }
 };
