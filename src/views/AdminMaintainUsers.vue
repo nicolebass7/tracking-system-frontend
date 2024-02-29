@@ -14,8 +14,6 @@ const router = useRouter();
 const users = ref([]);
 const displayedUsers = ref([]);
 const departments = ref([]);
-const normalUsers = ref([]);
-const managerUsers = ref([]);
 const message = ref("");
 const keyword = ref("");
 const snackbar = ref(false);
@@ -25,6 +23,10 @@ const selectedDepartments = ref([]);
 const roleChangeConfirm = ref(false);
 const confirmRole = ref("");
 const changeRoleUser = ref("");
+
+function directpage(name){
+  if(name === 'Add Users'){
+    router.push({ path: "/addNewUser" });}}
 
 function searchUser() {
     displayedUsers.value = [];
@@ -55,11 +57,7 @@ function searchUser() {
 };
 function filter () {
     displayedUsers.value = [];
-    //var filterList = [];
 
-    // filterList.push(filterDepartments());
-    // filterList.push(filterRoles()); 
-  
     filterDepartments().forEach(e => {
         if(!displayedUsers.value.includes(e)) displayedUsers.value.push(e);
     });
@@ -111,15 +109,6 @@ function filterRoles() {
     return  returnedUsers;
 
 }
-function searchUserName(search) {
-    let returnArr = [];
-    for (let [key, value] of usersNames.entries()) {
-        if (value.toLowerCase().includes(search.value.toLowerCase())) {
-            returnArr.push(key);
-        }
-    }
-    return returnArr;
-}
 
 function confirmChangeRole(item, roleType){
     roleChangeConfirm.value = true;
@@ -162,7 +151,6 @@ async function changeRole() {
         message.value = e.response;
 
     });
-   // roleChangeConfirm.value = false;
     
 }
 
@@ -246,7 +234,6 @@ export default {
                 { title: 'Role', align: 'center', key: 'roleType', width: '15%' },
                 { title: 'ID', align: 'center', key: 'schoolId', sortable: false, width: '25%' },
                 { title: 'Department', align: 'center', key: 'department', width: '30%' },
-               // { title: 'Change Role', align: 'center', key: 'edit', sortable: false, width: '15%' },
             ],
             roleChoices: [
 
@@ -277,14 +264,8 @@ export default {
             </v-btn>
         </template>
     </v-snackbar>
+
     <div>
-        
-   
-        
-        <!-- <v-toolbar color="#801529" dense :elevation="8" class="pa-3">
-            <v-toolbar-title>Users</v-toolbar-title> -->
-            
-    
         <v-card
         class="mx-auto pa-6"
         flat
@@ -296,8 +277,8 @@ export default {
                     variant="outlined" density="compact" single-line rounded
                     @click:prepend-inner="searchUser()" v-on:keyup.enter="searchUser()">
                 </v-text-field>
+
             <v-menu :close-on-content-click="false"
-                    
                 >
                 <template v-slot:activator="{ props }">
                     <v-btn class="mx-6" height="40" v-bind="props" color="#811429" variant="elevated">
@@ -318,16 +299,26 @@ export default {
                     </v-list>
                 </v-card>
             </v-menu>
+            <v-btn 
+                    @click="directpage('Add Users')"
+                    class="mx-4"
+                    height="40"  
+                    color="#801529" 
+                    variant="elevated">
+                        Add Users 
+                </v-btn>
+            
        
     
     </v-app-bar>
     
-
+    
   
     <v-card class="pa-6 mx-6">
       
       
         <v-card-item max-width="1250px" location="center">
+            
         <v-data-table-virtual :items=displayedUsers :headers=headers density="comfortable" fixed-header>
 
 
@@ -344,7 +335,7 @@ export default {
 </v-card>
 
 
-    </div>
+</div>
 
     <v-overlay
         v-model="roleChangeConfirm"
