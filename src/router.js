@@ -7,6 +7,7 @@ import AdminHomePage from "./views/AdminHomePage.vue";
 import ManagementHomePage from "./views/ManagementHomePage.vue";
 import UserHomePage from "./views/UserHomePage.vue";
 import addNewUser from "./views/addNewUser.vue";
+import GeneralAsset from "./views/GeneralAsset.vue"
 
 import addAsset from "./views/addAsset.vue";
 
@@ -38,6 +39,12 @@ const router = createRouter({
       path: "/AdminHomePage",
       name: "AdminHomePage",
       component: AdminHomePage,
+
+    },
+    {
+      path: "/GeneralAsset",
+      name: "GeneralAsset",
+      component: GeneralAsset,
 
     },
     {
