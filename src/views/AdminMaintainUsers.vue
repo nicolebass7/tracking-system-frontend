@@ -24,6 +24,10 @@ const roleChangeConfirm = ref(false);
 const confirmRole = ref("");
 const changeRoleUser = ref("");
 
+function directpage(name){
+  if(name === 'Add Users'){
+    router.push({ path: "/addNewUser" });}}
+
 function searchUser() {
     displayedUsers.value = [];
     console.log("Search keyword is " + keyword.value);
@@ -53,7 +57,7 @@ function searchUser() {
 };
 function filter () {
     displayedUsers.value = [];
-  
+
     filterDepartments().forEach(e => {
         if(!displayedUsers.value.includes(e)) displayedUsers.value.push(e);
     });
@@ -260,8 +264,8 @@ export default {
             </v-btn>
         </template>
     </v-snackbar>
-    <div>         
-    
+
+    <div>
         <v-card
         class="mx-auto pa-6"
         flat
@@ -273,8 +277,15 @@ export default {
                     variant="outlined" density="compact" single-line rounded
                     @click:prepend-inner="searchUser()" v-on:keyup.enter="searchUser()">
                 </v-text-field>
+                <v-btn 
+                    @click="directpage('Add Users')"
+                    class="mx-6" 
+                    height="40"  
+                    color="#801529" 
+                    variant="elevated">
+                        Add Users 
+                </v-btn>
             <v-menu :close-on-content-click="false"
-                    
                 >
                 <template v-slot:activator="{ props }">
                     <v-btn class="mx-6" height="40" v-bind="props" color="#811429" variant="elevated">

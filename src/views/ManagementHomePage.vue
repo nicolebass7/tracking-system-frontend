@@ -73,7 +73,7 @@ function directpage(name){
 export default {
   data() {
     return{
-      buttons: ['Asset List', 'Person List', 'Maintain Users','Add Users', 'Reports']
+      buttons: ['Asset List', 'Person List', 'Maintain Users', 'Reports']
     };
   }
 };
