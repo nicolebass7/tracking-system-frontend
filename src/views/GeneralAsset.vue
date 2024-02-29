@@ -269,9 +269,9 @@ export default {
             headers: [
 
                 { title: 'Asset Type', align: 'start', key: 'assetType' , width: '30%' },
-                { title: 'Make', align: 'center', key: 'make', width: '15%' },
-                { title: 'Model', align: 'center', key: 'model', sortable: false, width: '25%' },
-                { title: 'Archive Asset', align: 'center', key: 'archive', sortable: false, width: '15%' },
+                { title: 'Make', align: 'left', key: 'make', width: '25%' },
+                { title: 'Model', align: 'left', key: 'model', sortable: false, width: '25%' },
+                { title: 'Archive Asset', align: 'center', key: 'archive', sortable: false, width: '5%' },
             ],
             roleChoices: [
 
@@ -379,7 +379,7 @@ export default {
         class="align-center justify-center"
       >
         <v-card class="pa-6">
-            <v-card-title>Confirm change of {{ archivingAsset.model }} {{ archivingAsset.make }} to {{ archivingAsset.archived }}</v-card-title>
+            <v-card-title>Confirm change of {{ archivingAsset.make }} {{ archivingAsset.model }} archive status to {{ archivingAsset.archived }}</v-card-title>
             <v-card-actions>
             <v-btn @click="archiveConfirm()"
             class="mx-6"
