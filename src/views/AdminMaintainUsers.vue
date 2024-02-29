@@ -273,6 +273,7 @@ export default {
                     variant="outlined" density="compact" single-line rounded
                     @click:prepend-inner="searchUser()" v-on:keyup.enter="searchUser()">
                 </v-text-field>
+                
             <v-menu :close-on-content-click="false"
                     
                 >
@@ -295,16 +296,26 @@ export default {
                     </v-list>
                 </v-card>
             </v-menu>
+            <v-btn 
+                    @click="directpage('Add Users')"
+                    class="mx-4"
+                    height="40"  
+                    color="#801529" 
+                    variant="elevated">
+                        Add Users 
+                </v-btn>
+            
        
     
     </v-app-bar>
     
-
+    
   
     <v-card class="pa-6 mx-6">
       
       
         <v-card-item max-width="1250px" location="center">
+            
         <v-data-table-virtual :items=displayedUsers :headers=headers density="comfortable" fixed-header>
 
 
