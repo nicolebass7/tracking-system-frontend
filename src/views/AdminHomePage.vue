@@ -12,8 +12,12 @@ function directpage(name){
   if(name === 'Add Users'){
     router.push({ path: "addNewUser" });
   } else if (name === 'Maintain Users') {
-    router.push({ path: "adminMaintainUsers" }); // Adjust the path according to your route configuration
-  }
+    router.push({ path: "adminMaintainUsers" });
+  } else if (name === 'Asset List'){
+    router.push({ path: "AssetList"});
+  } else if (name === 'Person List'){
+    router.push({ path: "PersonList" });
+}
 }
 
 </script>
@@ -35,6 +39,7 @@ function directpage(name){
         <v-row justify="center">
           <v-col v-for="(button, index) in buttons.slice(0, 2)" :key="index" cols="12" md="6">
             <v-btn
+            @click = directpage(button) 
             color="primary"
             width="300px"
               size = "x-large"
@@ -68,7 +73,7 @@ function directpage(name){
 export default {
   data() {
     return {
-      buttons: ['Asset List', 'Reports', 'Add Users', 'Maintain Users']
+      buttons: ['Asset List', 'Reports', 'Maintain Users', 'Person List']
     };
   }
 };

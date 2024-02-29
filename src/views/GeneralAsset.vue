@@ -6,27 +6,27 @@ import { VContainer } from 'vuetify/lib/components';
 
 import { reactive, ref, onMounted, VueElement } from "vue";
 import { useRouter } from "vue-router";
-import userServices from "../services/userServices";
-import departmentServices from "../services/departmentServices"
+import assetServices from "../services/assetServices";
+import makeServices from "../services/makeServices";
+import modelServices from "../services/modelServices";
+import typeServices from "../services/assetTypeServices";
+
 
 
 const router = useRouter();
-const users = ref([]);
-const displayedUsers = ref([]);
-const departments = ref([]);
+const assets = ref([]);
+const displayedAssets = ref([]);
+const makes = ref([]);
 const message = ref("");
 const keyword = ref("");
 const snackbar = ref(false);
 const roles = ref([]);
 const selectedRoles = ref([]);
 const selectedDepartments = ref([]);
-const roleChangeConfirm = ref(false);
+const archivingAsset = ref(Object);
+const ArchiveChangeConfirm = ref(false);
 const confirmRole = ref("");
 const changeRoleUser = ref("");
-
-function directpage(name){
-  if(name === 'Add Users'){
-    router.push({ path: "/addNewUser" });}}
 
 function searchUser() {
     displayedUsers.value = [];
@@ -57,7 +57,7 @@ function searchUser() {
 };
 function filter () {
     displayedUsers.value = [];
-
+  
     filterDepartments().forEach(e => {
         if(!displayedUsers.value.includes(e)) displayedUsers.value.push(e);
     });
@@ -109,20 +109,46 @@ function filterRoles() {
     return  returnedUsers;
 
 }
-
-function confirmChangeRole(item, roleType){
-    roleChangeConfirm.value = true;
-    confirmRole.value = roleType;
-    changeRoleUser.value = item;
-
-
+function archive(asset){
+    archivingAsset.value = asset;
+    ArchiveChangeConfirm.value = true
+    
 }
-async function cancelConfirm(){
-    await retrieveUsers()
-    .then(() =>{
-        filter();
-        roleChangeConfirm.value= false;
+async function archiveConfirm() {
+    if (archivingAsset.value.archived == true) {
+        var archiveVal = true;
+        console.log("Status should change to true")
+    }
+    else {
+        var archiveVal = false;
+    }
+    const requestData = {
+        archived: archiveVal,
+    }
+    console.log(requestData)
+    await assetServices.update(archivingAsset.value.id, requestData)
+    .then((response) => {
+        console.log("Archived")
+        console.log(response)
     })
+    .catch((e) =>{
+        message.value = e.response;
+
+    });
+    ArchiveChangeConfirm.value = false;
+}
+
+async function cancelArchive(){
+    
+    assets.value.forEach(asset => {
+        if(asset.id == archivingAsset.value.id){
+            if(archivingAsset.value.archived == false){
+                asset.archived = true;
+            }
+            else asset.archived = false;
+        }
+    });
+    ArchiveChangeConfirm.value = false;
 }
 async function changeRole() {
     const requestData ={
@@ -151,28 +177,26 @@ async function changeRole() {
         message.value = e.response;
 
     });
+   // roleChangeConfirm.value = false;
     
 }
 
-async function retrieveUsers() {
-    await userServices.getAll()
+async function retrieveAssets() {
+    await assetServices.getAll()
         .then(async (response) => {
-            users.value = response.data;
-            users.value.forEach(async element => {
-                console.log(element);
-                await setFullName(element);
-                if (element.departmentId != null) {
-                    retriveDepartment(element);
-                }
-            });
-            users.value.forEach(user => {
-                displayedUsers.value.push(user);
-                if (!roles.value.includes(user.roleType))
-                    roles.value.push(user.roleType);
+            assets.value = response.data;
+        
+            assets.value.forEach(async asset => {
+                console.log(asset);
+                retrieveMake(asset);
+                retrieveModel(asset);
+                retriveType(asset);
+                displayedAssets.value.push(asset);
 
-            })
-            console.log(roles);
-            console.log(displayedUsers);
+
+            });
+            console.log(assets.value);
+            console.log(displayedAssets.value);
 
 
 
@@ -185,12 +209,12 @@ async function retrieveUsers() {
 
 
 };
-async function retriveDepartments() {
-    await departmentServices.getAll()
-        .then(async (response) => {
+async function retrieveMake(asset) {
+    await makeServices.get(asset.makeId)
+        .then((response) => {
 
-            departments.value = response.data;
-            console.log(response.data)
+            asset.make = response.data.make;
+            console.log(response.data.name)
         })
         .catch((e) => {
             message.value = e.response.data.message;
@@ -198,11 +222,25 @@ async function retriveDepartments() {
 
 
 }
-async function retriveDepartment(user) {
-    await departmentServices.get(user.departmentId)
+async function retrieveModel(asset) {
+    console.log(asset)
+    await modelServices.get(asset.modelId)
         .then((response) => {
-            user.department = response.data.name;
-            console.log("Department is " + user.department)
+
+            asset.model = response.data.model;
+            console.log(response.data.name);
+        })
+        .catch((e) => {
+            message.value = e.response.data.message;
+        });
+
+
+}
+async function retriveType(asset) {
+    await typeServices.get(asset.assetTypeId)
+        .then((response) => {
+            asset.assetType = response.data.name;
+            console.log("Asset Type is " + asset.assetType)
         })
         .catch((e) => {
             message.value = e.response.data.message;
@@ -216,8 +254,8 @@ async function setFullName(user) {
 
 onMounted(
     async () => {
-        await retrieveUsers();
-        await retriveDepartments();
+        await retrieveAssets();
+        // await retrive();
         
     });
 
@@ -230,10 +268,10 @@ export default {
         return {
             headers: [
 
-                { title: 'Name', align: 'start', key: 'fullName' , width: '30%' },
-                { title: 'Role', align: 'center', key: 'roleType', width: '15%' },
-                { title: 'ID', align: 'center', key: 'schoolId', sortable: false, width: '25%' },
-                { title: 'Department', align: 'center', key: 'department', width: '30%' },
+                { title: 'Asset Type', align: 'start', key: 'assetType' , width: '30%' },
+                { title: 'Make', align: 'center', key: 'make', width: '15%' },
+                { title: 'Model', align: 'center', key: 'model', sortable: false, width: '25%' },
+                { title: 'Archive Asset', align: 'center', key: 'archive', sortable: false, width: '15%' },
             ],
             roleChoices: [
 
@@ -264,28 +302,27 @@ export default {
             </v-btn>
         </template>
     </v-snackbar>
-
     <div>
+        
+   
+        
+        <!-- <v-toolbar color="#801529" dense :elevation="8" class="pa-3">
+            <v-toolbar-title>Users</v-toolbar-title> -->
+            
+    
         <v-card
         class="mx-auto pa-6"
         flat
         max-width="1250px">
             <v-app-bar  class="pa-6 mx-auto" color="white" density="prominent" height="15" :elevation="2" flat>
         
-                <v-app-bar-title>User List</v-app-bar-title>
+                <v-app-bar-title>General Asset List</v-app-bar-title>
                 <v-text-field class="mx-auto" bg-color="white" v-model="keyword"  prepend-inner-icon="mdi-magnify" label="Search by name or ID"
                     variant="outlined" density="compact" single-line rounded
                     @click:prepend-inner="searchUser()" v-on:keyup.enter="searchUser()">
                 </v-text-field>
-                <v-btn 
-                    @click="directpage('Add Users')"
-                    class="mx-6" 
-                    height="40"  
-                    color="#801529" 
-                    variant="elevated">
-                        Add Users 
-                </v-btn>
             <v-menu :close-on-content-click="false"
+                    
                 >
                 <template v-slot:activator="{ props }">
                     <v-btn class="mx-6" height="40" v-bind="props" color="#811429" variant="elevated">
@@ -316,14 +353,17 @@ export default {
       
       
         <v-card-item max-width="1250px" location="center">
-        <v-data-table-virtual :items=displayedUsers :headers=headers density="comfortable" fixed-header>
+        <v-data-table-virtual :items=displayedAssets :headers=headers density="comfortable" fixed-header>
 
 
-            <template v-slot:item.roleType ="{ item }">
-                <v-select v-model= item.roleType
-                 :items="roleChoices" @update:modelValue="confirmChangeRole(item, item.roleType)" variant="plain">
-
-                </v-select>
+            <template v-slot:item.archive="{ item }">
+               <v-switch
+                v-model="item.archived"
+                @update:modelValue="archive(item)"
+                >
+                
+               </v-switch> 
+               
             </template>
 
         </v-data-table-virtual>
@@ -335,13 +375,13 @@ export default {
 </div>
 
     <v-overlay
-        v-model="roleChangeConfirm"
+        v-model="ArchiveChangeConfirm"
         class="align-center justify-center"
       >
         <v-card class="pa-6">
-            <v-card-title>Confirm change of {{ changeRoleUser.fullName }} to {{ confirmRole }} role</v-card-title>
+            <v-card-title>Confirm change of {{ archivingAsset.model }} {{ archivingAsset.make }} to {{ archivingAsset.archived }}</v-card-title>
             <v-card-actions>
-            <v-btn @click="changeRole()"
+            <v-btn @click="archiveConfirm()"
             class="mx-6"
             variant="flat"
             color="green"
@@ -351,7 +391,7 @@ export default {
                 Confirm
             </v-btn>
             <v-btn
-            @click="cancelConfirm()"
+            @click="cancelArchive()"
             class="mx-6"
             variant="outlined"
             min-width="150"

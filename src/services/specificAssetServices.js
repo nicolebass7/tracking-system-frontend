@@ -2,13 +2,13 @@ import apiClient from "./services.js";
 
 export default {
   getAll() {
-    return apiClient.get("/specificAsset/");
+    return apiClient.get(`/specificAsset/`);
   },
   get(id) {
     return apiClient.get(`/specificAsset/${id}`);
   },
   create(data) {
-    return apiClient.post("/specificAsset", data);
+    return apiClient.post("/specificAsset/", data);
   },
   update(id, data) {
     return apiClient.put(`/specificAsset/${id}`, data);
@@ -19,5 +19,6 @@ export default {
   deleteAll() {
     return apiClient.delete(`/specificAsset`);
   },
-  
+
+ 
 };
