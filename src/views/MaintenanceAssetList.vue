@@ -124,7 +124,7 @@ async function retrieveSpecificAssets(specificAssets) {
     await specificAssetServices.getAll()
         .then((response) => {
             specificAssets = response.data;
-            console.log(response.data);
+            console.log('here1', response.data);
             
         
         specificAssets.value.forEach(specificAssets => {
@@ -132,7 +132,7 @@ async function retrieveSpecificAssets(specificAssets) {
                 
 
             })
-            console.log(displayedSpecificAsset);
+            console.log('here2', displayedSpecificAsset);
 
 
 
@@ -149,7 +149,7 @@ async function retriveBuilding() {
         .then(async (response) => {
 
             building.value = response.data;
-            console.log(response.data)
+            console.log('building',response.data)
         })
         .catch((e) => {
             message.value = e.response.data.message;
@@ -158,7 +158,7 @@ async function retriveBuilding() {
 }
 
 const viewDetails = (specificAsset) => {
-    console.log(specificAsset)
+    console.log('specific', specificAsset)
     router.push({name: "MaintenanceEditAsset", params: { id: specificAsset.id}});
 }
 
@@ -179,9 +179,9 @@ export default {
 
                 { title: 'id', align: 'start', key: 'id' , width: '10%' },
                 { title: 'Asset Type', align: 'center', key: 'asset.name', sortable: false, width: '10%' },
-                { title: 'Building', align: 'start', key: 'building', sortable: false, width: '35%' },
-                { title: 'Room', align: 'center', key: 'room', sortable: false, width: '10%' },
-                { title: 'Asset Details', align: 'center', key: 'edit', sortable: false, width: '10%' },
+                { title: 'Building', align: 'start', key: 'buildingId', sortable: false, width: '35%' },
+                { title: 'Room', align: 'center', key: 'leaseId', sortable: false, width: '10%' },
+                // { title: 'Asset Details', align: 'center', key: 'edit', sortable: false, width: '10%' },
             ],
             filterCats: [
                 { title: "Asset Type" },
@@ -254,11 +254,11 @@ v-data-table-virtual-header {
         <v-data-table-virtual :items=displayedSpecificAsset :headers=headers density="comfortable" fixed-header>
 
 
-            <template v-slot:item.edit  = "{ item }">
+            <!-- <template v-slot:item.edit  = "{ item }">
                 <v-btn @click="viewDetails(item)" prepend-icon="mdi-pencil">
 
                 </v-btn>
-            </template>
+            </template> -->
 
         </v-data-table-virtual>
     </div>
