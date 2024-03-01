@@ -16,17 +16,19 @@ import typeServices from "../services/assetTypeServices";
 const router = useRouter();
 const assets = ref([]);
 const displayedAssets = ref([]);
-const makes = ref([]);
 const message = ref("");
 const keyword = ref("");
 const snackbar = ref(false);
 const roles = ref([]);
-const selectedRoles = ref([]);
+const selectedTypes = ref([]);
 const selectedDepartments = ref([]);
+const types = ref([]);
 const archivingAsset = ref(Object);
 const ArchiveChangeConfirm = ref(false);
+const showArchived = ref(false);
 const confirmRole = ref("");
 const changeRoleUser = ref("");
+
 
 function searchUser() {
     displayedUsers.value = [];
@@ -56,19 +58,23 @@ function searchUser() {
     };
 };
 function filter () {
-    displayedUsers.value = [];
+    displayedAssets.value = [];
   
-    filterDepartments().forEach(e => {
-        if(!displayedUsers.value.includes(e)) displayedUsers.value.push(e);
+    // filterDepartments().forEach(e => {
+    //     if(!displayedAssets.value.includes(e)) displayedAssets.value.push(e);
+    // });
+    filterArchived().forEach(e => {
+        if(!displayedAssets.value.includes(e)) displayedAssets.value.push(e);
     });
-    filterRoles().forEach(e => {
-        if(!displayedUsers.value.includes(e)) displayedUsers.value.push(e);
+    filterTypes().forEach(e => {
+        if(!displayedAssets.value.includes(e)) displayedAssets.value.push(e);
     });
-    console.log(displayedUsers.value);
     
-    if (displayedUsers.value.length == 0) {
-        users.value.forEach(user => {
-            displayedUsers.value.push(user);
+    console.log(displayedAssets.value);
+    
+    if (displayedAssets.value.length == 0) {
+        assets.value.forEach(asset => {
+            displayedAssets.value.push(asset);
         })
     };
 }
@@ -97,16 +103,18 @@ function filterDepartments() {
     return returnedUsers;
 
 }
-function filterRoles() {
-    var returnedUsers = [];
-    users.value.forEach(user => {
-        selectedRoles.value.forEach(role => {
-            if(user.roleType == role){
-                returnedUsers.push(user);
+function filterTypes() {
+    var returnedAssets = [];
+    assets.value.forEach(asset => {
+        
+        selectedTypes.value.forEach(type => {
+            if(asset.assetType == type){
+                console.log("HERHER")
+                returnedAssets.push(asset);
             }
         })
     })
-    return  returnedUsers;
+    return  returnedAssets;
 
 }
 function archive(asset){
@@ -117,7 +125,6 @@ function archive(asset){
 async function archiveConfirm() {
     if (archivingAsset.value.archived == true) {
         var archiveVal = true;
-        console.log("Status should change to true")
     }
     else {
         var archiveVal = false;
@@ -150,35 +157,23 @@ async function cancelArchive(){
     });
     ArchiveChangeConfirm.value = false;
 }
-async function changeRole() {
-    const requestData ={
-        roleType: confirmRole.value.toLowerCase(),
-    }
-    console.log(changeRoleUser.value.id)
-    console.log(requestData)
-    await userServices.update(changeRoleUser.value.id, requestData)
-    .then(() => {
-        roleChangeConfirm.value = false;
-        roles.value = [];
-        users.value.forEach(user => {
-            if(!roles.value.includes(user.roleType)){
-                roles.value.push(user.roleType);
+function filterArchived(){
+    var archived = [];
+    if(showArchived.value == false){
+        assets.value.forEach((asset) => {
+            if(asset.archived == false){
+                archived.push(asset);
             }
         })
-        for(var i=0; i < selectedRoles.value.length; i++){
-            if(!roles.value.includes(selectedRoles.value[i])){
-                selectedRoles.value.splice(i, 1);
-            };
-        }
-        filter();
+        showArchived.value = false;
+    } else{
+        assets.value.forEach((asset) => {
+            archived.push(asset);
+        })
+        showArchived.value=true;
         
-    })
-    .catch((e) =>{
-        message.value = e.response;
-
-    });
-   // roleChangeConfirm.value = false;
-    
+    };
+    return archived;
 }
 
 async function retrieveAssets() {
@@ -191,7 +186,9 @@ async function retrieveAssets() {
                 retrieveMake(asset);
                 retrieveModel(asset);
                 retriveType(asset);
-                displayedAssets.value.push(asset);
+                if(asset.archived == false){
+                    displayedAssets.value.push(asset);
+                };
 
 
             });
@@ -247,6 +244,15 @@ async function retriveType(asset) {
         })
 
 };
+async function retrieveTypes(){
+    await typeServices.getAll()
+    .then((resposne) => {
+        types.value = resposne.data;
+    })
+    .catch((e) => {
+            message.value = e.response.data.message;
+        })
+}
 async function setFullName(user) {
     user.fullName = user.fName + " " + user.lName;
 }
@@ -255,6 +261,7 @@ async function setFullName(user) {
 onMounted(
     async () => {
         await retrieveAssets();
+        await retrieveTypes();
         // await retrive();
         
     });
@@ -282,7 +289,7 @@ export default {
             ],
             filterCats: [
                 { title: "Departments" },
-                { title: "Role Type" },
+                { title: "Type" },
             ],
 
 
@@ -330,17 +337,30 @@ export default {
                     </v-btn>
                 </template>
                 <v-card min-width="300">
+                    <v-checkbox
+                            v-model="showArchived"
+                            label="Show Archived"
+                            @update:modelValue="filter()"
+                            >
+                                
+                            </v-checkbox>
                     <v-list>
                         <v-list-item v-for="(item, index) in filterCats" :key="index">
-                            <v-select v-if="item.title == 'Departments'" v-model="selectedDepartments" label="Department"
-                                :items="departments" item-title="name" @update:modelValue="filter()" multiple>
-                            </v-select>
-                            <v-select v-model="selectedRoles" v-if="item.title == 'Role Type'" @update:modelValue="filter()" label="Role Type" :items="roles"
-                                multiple>
-                            </v-select>
+                            <v-autocomplete
+                            v-model="selectedTypes"
+                            v-if="item.title == 'Type'"
+                            @update:modelValue="filter()"
+                            label="Asset Type" 
+                            item-title="name"
+                            :items="types"
+                            multiple
+                            >
+                            </v-autocomplete>
+                            
 
                         </v-list-item>
                     </v-list>
+                    
                 </v-card>
             </v-menu>
        
@@ -357,12 +377,12 @@ export default {
 
 
             <template v-slot:item.archive="{ item }">
-               <v-switch
+               <v-checkbox
                 v-model="item.archived"
                 @update:modelValue="archive(item)"
                 >
                 
-               </v-switch> 
+               </v-checkbox> 
                
             </template>
 
