@@ -60,16 +60,15 @@ onMounted(async () => {
             <v-window-item value="one">
         <v-card-text>
           <v-text-field
-            label="Email"
-            placeholder="john@google.com"
+            label="Serivced Date"
           ></v-text-field>
           <v-text-field
-            label="Email"
-            placeholder="john@google.com"
+            label="Serviced By:"
+            placeholder="Nicole Bass"
           ></v-text-field>
-          <span class="text-caption text-grey-darken-1">
-            This is the email you will use to login to your Vuetify account
-          </span>
+          <span>Comments:  </span>
+          <p>{{ comments }}</p>
+          <textarea class= "wrap" id="grievances" placeholder="Type comments here..."></textarea>
         </v-card-text>
       </v-window-item>
             
@@ -89,3 +88,37 @@ onMounted(async () => {
     
   </div>
 </template>
+<style scoped>
+
+
+textarea {
+    white-space: pre-line;
+    width: 450px;
+    height: 150px;
+    border:3px solid #CCC;
+    border-radius: 4px;
+    resize: both;
+  
+}
+
+.wrap {
+    position: relative;
+    display: inline-block;
+}
+  
+.wrap:after {
+    content:"";
+    border-top: 2px solid #555;
+    width:16px;
+    transform: rotate(-45deg);
+    background:transparent;
+    position: absolute;
+    right: 1px;
+    bottom: 14px;
+    pointer-events: none;
+    border-radius:25%;
+}
+
+
+</style>
+
