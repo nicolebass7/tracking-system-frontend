@@ -2,10 +2,12 @@
 import { ref, onMounted } from "vue";
 import PersonServices from "../services/personServices";
 import { useRouter } from "vue-router";
+import assetStatusServices from "../services/assetStatusServices";
 
 const router = useRouter();
 const valid = ref(false);
 const persons = ref({});
+const assetStatus = ref({});
 const message = ref({});
 const tab = ref(null)
 
@@ -30,10 +32,21 @@ async function retrievePerson(){
   });
 };
 
+async function retrieveAssetStatus(){
+  await assetStatusServices.getAll()
+  .then((response) => {
+    assetStatus.value = response.data;
+    console.log(response);
+  })
+  .catch((e) => {
+    message.value = e.response.data.message;
+  });
+};
 
 
 onMounted(async () => {
   await retrievePerson();
+  await retrieveAssetStatus();
 });
 </script>
 

@@ -2,22 +2,22 @@ import apiClient from "./services.js";
 
 export default {
   getAll() {
-    return apiClient.get("/persons");
+    return apiClient.get("/person");
   },
   get(id) {
-    return apiClient.get(`/persons/${id}`);
+    return apiClient.get(`/person/${id}`);
   },
   create(data) {
-    return apiClient.post("/persons", data);
+    return apiClient.post("person", data);
   },
   update(id, data) {
-    return apiClient.put(`/persons/${id}`, data);
+    return apiClient.put(`/person/${id}`, data);
   },
   delete(id) {
-    return apiClient.delete(`/persons/${id}`);
+    return apiClient.delete(`/person/${id}`);
   },
   deleteAll() {
-    return apiClient.delete(`/persons`);
+    return apiClient.delete(`/person`);
   },
   
 };
