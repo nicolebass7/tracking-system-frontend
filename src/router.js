@@ -14,7 +14,6 @@ import addAsset from "./views/addAsset.vue";
 import PersonHistory from "./views/PersonHistory.vue";
 import PersonList from "./views/PersonList.vue";
 
-import MaintenanceAssetList from "./views/MaintenanceAssetList.vue";
 import MaintenanceEditAsset from "./views/MaintenanceEditAsset.vue";
 
 const router = createRouter({
@@ -64,6 +63,14 @@ const router = createRouter({
     path: "/addNewUser",
     name: "addNewUser",
     component: addNewUser,
+    props: true,
+
+  },
+  
+  {
+    path: "/maintenanceEditAsset",
+    name: "maintenanceEditAsset",
+    component: MaintenanceEditAsset,
     props: true,
 
   },
