@@ -11,7 +11,8 @@ import specificAssetServices from "../services/specificAssetServices";
 import makeServices from "../services/makeServices";
 import modelServices from "../services/modelServices";
 import typeServices from "../services/assetTypeServices";
-
+import assetDataServices from "../services/assetDataServices";
+import assetStatusServices from "../services/assetStatusServices";
 
 
 const router = useRouter();
@@ -24,6 +25,8 @@ const snackbar = ref(false);
 const roles = ref([]);
 const selectedRoles = ref([]);
 const selectedDepartments = ref([]);
+const generalAssets = ref(new Map());
+const assetStatus = ref(new Map());
 const archivingAsset = ref(Object);
 const ArchiveChangeConfirm = ref(false);
 const confirmRole = ref("");
@@ -163,12 +166,23 @@ async function retrieveSpecificAssets() {
         
             assets.value.forEach(async asset => {
                 console.log(asset);
-                retrieveAsset(asset);
-                retrieveMake(asset);
-                retrieveModel(asset);
-                retriveType(asset);
-                displayedAssets.value.push(asset);
+                if(!generalAssets.value.has(asset.assetId)){
+                    await retrieveAsset(asset);
+                }
+                var generalAsset = generalAssets.value.get(asset.assetId);
+                console.log(generalAsset);
 
+                asset.description = generalAsset.description;
+                asset.archived = generalAsset.archived;
+                retrieveMake(generalAsset.makeId, asset);
+                // console.log(make);
+
+                retrieveModel(generalAsset.modelId, asset); 
+                retriveType(generalAsset.assetTypeId, asset);
+                var generalAsset = generalAssets.value.get(asset.id)
+                retrieveAssetData(asset.assetTypeId, generalAsset);
+                retrieveAssetStatus(asset.id);
+                displayedAssets.value.push(asset);
 
             });
             console.log(assets.value);
@@ -185,12 +199,21 @@ async function retrieveSpecificAssets() {
 
 
 };
+async function retrieveAssetStatus(assetId){
+    await assetStatusServices.getForAsset(assetId)
+        .then((response) => {
+            assetStatus.value.set(assetId, response.data);
+            
+        })
+        .catch((e) => {
+            message.value = e.response.data.message;
+        })
+}
 async function retrieveAsset(asset) {
     await assetServices.get(asset.assetId)
         .then((response) => {
-
-            asset.description = response.data.description;
-            console.log(response.data.name)
+            generalAssets.value.set(response.data.id, response.data)
+            console.log(generalAssets.value)
         })
         .catch((e) => {
             message.value = e.response.data.message;
@@ -198,12 +221,10 @@ async function retrieveAsset(asset) {
 
 
 }
-async function retrieveMake(asset) {
-    await makeServices.get(asset.makeId)
+async function retrieveMake(makeId, asset) {
+    await makeServices.get(makeId)
         .then((response) => {
-
-            asset.make = response.data.make;
-            console.log(response.data.name)
+            asset.make = response.data.make;            
         })
         .catch((e) => {
             message.value = e.response.data.message;
@@ -211,13 +232,10 @@ async function retrieveMake(asset) {
 
 
 }
-async function retrieveModel(asset) {
-    console.log(asset)
-    await modelServices.get(asset.modelId)
+async function retrieveModel(modelId, asset) {
+    await modelServices.get(modelId)
         .then((response) => {
-
             asset.model = response.data.model;
-            console.log(response.data.name);
         })
         .catch((e) => {
             message.value = e.response.data.message;
@@ -225,23 +243,35 @@ async function retrieveModel(asset) {
 
 
 }
-async function retriveType(asset) {
-    await typeServices.get(asset.assetTypeId)
+async function retriveType(assetTypeId, asset) {
+    console.log(assetTypeId);
+    await typeServices.get(assetTypeId)
         .then((response) => {
             asset.assetType = response.data.name;
-            console.log("Asset Type is " + asset.assetType)
         })
         .catch((e) => {
-            message.value = e.response.data.message;
+            message.value = e.response;
         })
 
 };
 
+async function retrieveAssetData(typeId, generalAsset) {
+    console.log(typeId)
+    await assetDataServices.getForType(typeId)
+        .then((response) => {
+            console.log(response.data);
+            generalAsset.dataFields =  response.data;
+        })
+        .catch((e) => {
+            message.value = e.response.data.message;
+        });
 
+
+}
 
 onMounted(
     async () => {
-        await retrieveAssets();
+        await retrieveSpecificAssets();
         
     });
 
