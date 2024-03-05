@@ -107,6 +107,7 @@ onMounted(async () => {
           v-model="addUser.fName"
           id="fName"
           :counter="50"
+          maxlength="50"
           label="First Name "
           required
         ></v-text-field>
@@ -114,6 +115,7 @@ onMounted(async () => {
           v-model="addUser.lName"
           id="lName"
           :counter="50"
+          maxlength="50"
           label="Last Name "
           required
         ></v-text-field>
@@ -121,6 +123,7 @@ onMounted(async () => {
           v-model="addUser.email"
           id="email"
           :counter="50"
+          maxlength="50"
           label="Email "
           required
         ></v-text-field>
@@ -128,6 +131,7 @@ onMounted(async () => {
           v-model="addUser.schoolId"
           id="addUserId"
           :counter="7"
+          maxlength="7"
           label="School ID" 
           required
         ></v-text-field> 
