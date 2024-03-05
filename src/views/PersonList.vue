@@ -8,6 +8,10 @@ import { reactive, ref, onMounted, VueElement } from "vue";
 import { useRouter } from "vue-router";
 import personServices from "../services/personServices"
 
+import { shallowRef } from 'vue'
+
+  const dialog = shallowRef(false)
+
 
 const router = useRouter();
 const persons = ref([]);
@@ -16,6 +20,12 @@ const message = ref("");
 const keyword = ref("");
 const snackbar = ref(false);
 
+const addPerson = ref({
+    id: null,
+    fName: "",
+    lName: "",
+    schoolId: ""
+})
 
 function searchPerson() {
     displayedPersons.value = [];
@@ -61,7 +71,7 @@ async function retrievePersons() {
         .then(async (response) => {
             persons.value = response.data;
             persons.value.forEach(async element => {
-                console.log(element);
+                //console.log(element);
                 await setFullName(element);
                 
             });
@@ -70,7 +80,7 @@ async function retrievePersons() {
                 
 
             })
-            console.log(displayedPersons);
+            //console.log(displayedPersons);
 
 
 
@@ -88,8 +98,28 @@ async function setFullName(person) {
     person.fullName = person.fName + " " + person.lName;
 }
 
+
+async function savePerson() {
+    const data = {
+        fName: addPerson.value.fName,
+        lName: addPerson.value.lName,
+        schoolId: addPerson.value.schoolId
+    };
+    
+    await personServices.create(data)
+        .then((response) => {
+            addPerson.value.id = response.data.id;
+            location.reload();
+        })
+        .catch((e) => {
+            message.value = e.response.data.message;
+
+        });
+   
+};
+
 const viewAssets = (person) => {
-    console.log(person)
+    //console.log(person)
     router.push({name: "PersonHistory", params: { id: person.id}});
 }
 
@@ -147,7 +177,81 @@ v-data-table-virtual-header {
                     variant="outlined" density="compact" single-line rounded
                     @click:prepend-inner="searchPerson()" v-on:keyup.enter="searchPerson()">
                 </v-text-field>
-            
+                <v-dialog
+                    v-model="dialog"
+                    max-width="600"
+    >
+                    <template v-slot:activator="{ props: activatorProps }">
+                        <v-btn
+                            class="mx-6" 
+                            height="40"  
+                            color="#801529" 
+                            variant="elevated"
+                            text="Add Person"
+                            v-bind="activatorProps"
+                        ></v-btn>
+                    </template>
+
+                    <v-card
+                        
+                        title="Add Person"
+                    >
+                        <v-card-text>
+                        <v-row dense>
+                            <v-col
+                            cols="12"
+                            md="4"
+                            sm="6"
+                            >
+                            <v-text-field
+                                v-model="addPerson.fName"
+                                label="First name"
+                                required
+                            ></v-text-field>
+                            </v-col>
+
+                            <v-col
+                            cols="12"
+                            md="4"
+                            sm="6"
+                            >
+                            <v-text-field
+                                v-model="addPerson.lName"
+                                label="Last Name"
+                            ></v-text-field>
+                            </v-col>
+
+                            <v-col
+                            cols="12"
+                            md="4"
+                            sm="6"
+                            >
+                            <v-text-field
+                                v-model="addPerson.schoolId"
+                                label="School Id"
+                            ></v-text-field>
+                            </v-col>
+                        </v-row>
+                        </v-card-text>
+                        <v-card-actions>
+                        <v-spacer></v-spacer>
+
+                        <v-btn
+                            color="green"
+                            text="Save"
+                            variant="tonal"
+                            @click="(savePerson()), (dialog= false)"
+                        ></v-btn>
+
+                        <v-btn
+                            text="Close"
+                            variant="plain"
+                            @click="dialog = false"
+                        ></v-btn>
+                        </v-card-actions>
+                    </v-card>
+                    </v-dialog>    
+                            
         </v-app-bar> 
 
        
@@ -166,6 +270,8 @@ v-data-table-virtual-header {
     </v-card>
     </v-card>
     </div> 
+
+    
 
 </template> 
 
