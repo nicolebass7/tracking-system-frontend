@@ -8,6 +8,7 @@ const router = useRouter();
 const valid = ref(false);
 const persons = ref({});
 const assetStatus = ref({});
+const specificAsset = ref({});
 const message = ref({});
 const tab = ref(null)
 
@@ -33,14 +34,16 @@ async function retrievePerson(){
 };
 
 async function retrieveAssetStatus(){
-  await assetStatusServices.getAll()
-  .then((response) => {
-    assetStatus.value = response.data;
-    console.log(response);
-  })
-  .catch((e) => {
+  await assetStatusServices.getForPerson(props.id)
+  .then ((response) => {
+      assetStatus.value = response.data;
+      console.log(response);
+   
+    }
+  )
+  .catch ((e) =>  {
     message.value = e.response.data.message;
-  });
+  })
 };
 
 
@@ -84,7 +87,7 @@ onMounted(async () => {
      
     
       <br />
-        <v-btn color="error" class="mr-4" @click="back()"> Back </v-btn>
+        <v-btn color="#a8dadc" class="mr-4" @click="back()"> Back </v-btn>
      
     </v-container>
     
