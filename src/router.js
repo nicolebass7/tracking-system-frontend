@@ -14,7 +14,7 @@ import addAsset from "./views/addAsset.vue";
 import PersonHistory from "./views/PersonHistory.vue";
 import PersonList from "./views/PersonList.vue";
 
-import MaintenanceEditAsset from "./views/MaintenanceEditAsset.vue";
+import ViewEditAsset from "./views/ViewEditAsset.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -68,9 +68,9 @@ const router = createRouter({
   },
   
   {
-    path: "/maintenanceEditAsset",
-    name: "maintenanceEditAsset",
-    component: MaintenanceEditAsset,
+    path: "/ViewEditAsset:id",
+    name: "ViewEditAsset",
+    component: ViewEditAsset,
     props: true,
 
   },

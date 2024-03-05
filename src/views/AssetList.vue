@@ -269,6 +269,11 @@ async function retrieveAssetData(typeId, generalAsset) {
 
 }
 
+const viewDetails = (specificAsset) => {
+    console.log('specificAsset:', specificAsset);
+    router.push({name: "ViewEditAsset", params: {id: specificAsset.id}})
+}
+
 onMounted(
     async () => {
         await retrieveSpecificAssets();
@@ -289,7 +294,7 @@ export default {
                 { title: 'Model', align: 'start', key: 'model', sortable: false, width: '10%' },
                 { title: 'Status', align: 'center', key: 'status', sortable: false, width: '10%' },
                 { title: 'Edit Asset', align: 'center', key: 'edit', sortable: false, width: '10%' },
-                { title: 'View Details', align: 'center', key: 'edit', sortable: false, width: '10%' },
+                { title: 'View Details', align: 'center', key: 'view', sortable: false, width: '10%' },
 
 
             ],
@@ -378,8 +383,8 @@ export default {
         <v-card-item max-width="1250px" location="center">
         <v-data-table-virtual :items=displayedAssets :headers=headers density="comfortable" fixed-header>
 
-          <template v-slot:item.edit>
-                <v-btn @click="viewUser(user)" prepend-icon="mdi-pencil">
+          <template v-slot:item.view = "{item}">
+                <v-btn @click="viewDetails(item)" prepend-icon="mdi-pencil">
 
                 </v-btn>
             </template>

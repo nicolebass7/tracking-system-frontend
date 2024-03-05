@@ -1,11 +1,11 @@
 <script setup>
 import { ref, onMounted } from "vue";
-import PersonServices from "../services/personServices";
+import SpecificAssetServices from "../services/specificAssetServices";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
 const valid = ref(false);
-const persons = ref({});
+const specificAssets = ref({});
 const message = ref({});
 const tab = ref(null)
 
@@ -20,20 +20,60 @@ const back = () => {
   router.push({ name: "AssetList" });
 };
 
-async function retrievePerson(){
-  await PersonServices.get(props.id)
+async function retrieveSpecificAsset(){
+  await SpecificAssetServices.get(props.id)
   .then((response) => {
-    persons.value = response.data;
+    specificAssets.value = response.data;
+    retrieveAsset(asset.id);
+    retrieveMake(asset.makeId);
+    retrieveModel(asset.modelId);
+    console.log("here: ", response.data);
   })
   .catch((e) => {
     message.value = e.response.data.message;
   });
 };
 
+async function retrieveAsset(asset) {
+    await assetServices.get(asset.assetId)
+        .then((response) => {
+            generalAssets.value.set(response.data.id, response.data)
+            console.log(generalAssets.value)
+        })
+        .catch((e) => {
+            message.value = e.response.data.message;
+        });
+
+
+}
+
+async function retrieveMake(makeId, asset) {
+    await makeServices.get(makeId)
+        .then((response) => {
+            asset.make = response.data.make;            
+        })
+        .catch((e) => {
+            message.value = e.response.data.message;
+        });
+
+
+}
+async function retrieveModel(modelId, asset) {
+    await modelServices.get(modelId)
+        .then((response) => {
+            asset.model = response.data.model;
+        })
+        .catch((e) => {
+            message.value = e.response.data.message;
+        });
+
+
+}
+
 
 
 onMounted(async () => {
-  await retrievePerson();
+  await retrieveSpecificAsset();
 });
 </script>
 
@@ -41,7 +81,7 @@ onMounted(async () => {
   <div>
     <v-container>
       <v-toolbar>
-        <v-toolbar-title>{{ persons.fName }} {{ persons.lName }}</v-toolbar-title>
+        <v-toolbar-title>{{ make.name }} {{ model.name }} </v-toolbar-title>
       </v-toolbar>
       <br />
       
