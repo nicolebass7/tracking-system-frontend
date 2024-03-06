@@ -1,117 +1,299 @@
+import { VContainer } from 'vuetify/lib/components';
+
 <style scoped></style>
 <script setup>
 
 
 import { reactive, ref, onMounted, VueElement } from "vue";
 import { useRouter } from "vue-router";
+import assetServices from "../services/assetServices";
 import specificAssetServices from "../services/specificAssetServices";
-import assetStatusServices from "../services/assetStatusServices"
-
+import makeServices from "../services/makeServices";
+import modelServices from "../services/modelServices";
+import typeServices from "../services/assetTypeServices";
+import assetDataServices from "../services/assetDataServices";
+import assetStatusServices from "../services/assetStatusServices";
 
 
 const router = useRouter();
-const assets =ref([]);
+const assets = ref([]);
 const displayedAssets = ref([]);
+const makes = ref([]);
 const message = ref("");
 const keyword = ref("");
 const snackbar = ref(false);
-const assetTypes = ref([]);
-const selectedAssetType = ref([]);
-const selectedStatus = ref([]);
-const status = ref([]);
-const assetStatuses = ref([]);
-const asset = ref([]);
+const roles = ref([]);
+const selectedRoles = ref([]);
+const selectedDepartments = ref([]);
+const generalAssets = ref(new Map());
+const assetStatus = ref(new Map());
+const archivingAsset = ref(Object);
+const ArchiveChangeConfirm = ref(false);
+const confirmRole = ref("");
+const changeRoleUser = ref("");
 
-async function searchAsset() {
-  displayedAssets.value = [];
-  if (keyword.value.trim() !== "") {
-    displayedAssets.value = assets.value.filter(
-      asset =>
-        asset.name.toLowerCase().includes(keyword.value.trim().toLowerCase()) ||
-        asset.id.toString().includes(keyword.value.trim())
-    );
-    if (displayedAssets.value.length === 0) {
-      snackbar.value = true;
-    }
-  } else {
-    displayedAssets.value = assets.value;
-    snackbar.value = true;
-  }
-}
-function filter() {
-  displayedAssets.value = [];
-  filterAssets().forEach(asset => {
-    if (!displayedAssets.value.includes(asset)) displayedAssets.value.push(asset);
-  });
-  if (displayedAssets.value.length === 0) {
-    assets.value.forEach(asset => {
-      displayedAssets.value.push(asset);
+function directpage(name){
+  if(name === 'Add Asset'){
+    router.push({ path: "/AddAsset" });}}
+
+function searchUser() {
+    displayedUsers.value = [];
+    console.log("Search keyword is " + keyword.value);
+    if (keyword.value != "") {
+        users.value.forEach(user => {
+            if (user.schoolId != null) {
+                if (user.schoolId.toString().includes(keyword.value)) {
+                    console.log("id match")
+
+                    displayedUsers.value.push(user);
+                };
+            };
+            if (user.fullName != null) {
+                if (user.fullName.toLowerCase().includes(keyword.value.toLocaleLowerCase())) {
+                    console.log("name match")
+                    displayedUsers.value.push(user)
+                };
+            };
+        });
+    };
+    if (displayedUsers.value.length == 0) {
+        users.value.forEach(user => {
+            displayedUsers.value.push(user);
+        })
+        snackbar.value = true;
+    };
+};
+function filter () {
+    displayedUsers.value = [];
+  
+    filterDepartments().forEach(e => {
+        if(!displayedUsers.value.includes(e)) displayedUsers.value.push(e);
     });
-  }
+    filterRoles().forEach(e => {
+        if(!displayedUsers.value.includes(e)) displayedUsers.value.push(e);
+    });
+    console.log(displayedUsers.value);
+    
+    if (displayedUsers.value.length == 0) {
+        users.value.forEach(user => {
+            displayedUsers.value.push(user);
+        })
+    };
 }
 
-function filterAssets() {
-  let returnedAssets = [...assets.value];
-  if (selectedAssetType.length > 0) {
-    returnedAssets = returnedAssets.filter(asset => selectedAssetType.includes(asset.assetType));
-  }
-  if (selectedStatus.length > 0) {
-    returnedAssets = returnedAssets.filter(asset => selectedStatus.includes(asset.status));
-  }
-  return returnedAssets;
-}
+function filterDepartments() {
+    var returnedUsers = [];
+    var departmentId = null;
+    users.value.forEach(user => {
+        selectedDepartments.value.forEach(async department => {
+            departments.value.forEach(e => {
+                console.log(e.name + " = " + department + " " + e.id);
 
-async function retrieveAssets() {
-    console.log('here')
-  await specificAssetServices.getAll()
-  .then((response) => {
-    console.log('assets',response.data)
-    assets.value = response.data;
-    assets.value.forEach (asset => {
-        assetStatuses.value.push(retrieveStatus(asset))
+                if (e.name == department) {
+                    console.log("true");
+                    departmentId = e.id
+                };
+            })
+            console.log("selected departmentID: " + departmentId);
+            console.log("selected user departmentID" + user.departmentId);
+            if (user.departmentId == departmentId) {
+                returnedUsers.push(user);
+                console.log(user);
+            };
+        })
     })
-    displayedAssets.value = assets.value;
-   
-    assetTypes.value = [...new Set(assets.value.map(asset => asset.assetType))];
-    status.value = [...new Set(assets.value.map(asset => asset.status))];
+    return returnedUsers;
+
+}
+function filterRoles() {
+    var returnedUsers = [];
+    users.value.forEach(user => {
+        selectedRoles.value.forEach(role => {
+            if(user.roleType == role){
+                returnedUsers.push(user);
+            }
+        })
+    })
+    return  returnedUsers;
+
+}
+function archive(asset){
+    archivingAsset.value = asset;
+    ArchiveChangeConfirm.value = true
+    
+}
+async function archiveConfirm() {
+    if (archivingAsset.value.archived == true) {
+        var archiveVal = true;
+        console.log("Status should change to true")
+    }
+    else {
+        var archiveVal = false;
+    }
+    const requestData = {
+        archived: archiveVal,
+    }
+    console.log(requestData)
+    await assetServices.update(archivingAsset.value.id, requestData)
+    .then((response) => {
+        console.log("Archived")
+        console.log(response)
     })
     .catch((e) =>{
-    message.value = e.response.data.message;
+        message.value = e.response;
+
     });
+    ArchiveChangeConfirm.value = false;
 }
 
-async function retrieveStatus(specificAsset) {
-  await assetStatusServices.getForAsset(specificAsset.id)
-  .then ((response) => {
-    console.log('asset', response.data)
-    asset.value = response.data;
-    }
-  )
-  .catch ((e) =>  {
-    message.value = e.response.data.message;
-  })
+async function cancelArchive(){
+    
+    assets.value.forEach(asset => {
+        if(asset.id == archivingAsset.value.id){
+            if(archivingAsset.value.archived == false){
+                asset.archived = true;
+            }
+            else asset.archived = false;
+        }
+    });
+    ArchiveChangeConfirm.value = false;
 }
 
-onMounted(async () => {
-  await retrieveAssets();
-});
+async function retrieveSpecificAssets() {
+    await specificAssetServices.getAll()
+        .then(async (response) => {
+            assets.value = response.data;
+        
+            assets.value.forEach(async asset => {
+                console.log(asset);
+                if(!generalAssets.value.has(asset.assetId)){
+                    await retrieveAsset(asset);
+                }
+                var generalAsset = generalAssets.value.get(asset.assetId);
+                console.log(generalAsset);
+
+                asset.description = generalAsset.description;
+                asset.archived = generalAsset.archived;
+                retrieveMake(generalAsset.makeId, asset);
+                // console.log(make);
+
+                retrieveModel(generalAsset.modelId, asset); 
+                retriveType(generalAsset.assetTypeId, asset);
+                var generalAsset = generalAssets.value.get(asset.id)
+                retrieveAssetData(asset.assetTypeId, generalAsset);
+                retrieveAssetStatus(asset.id);
+                displayedAssets.value.push(asset);
+
+            });
+            console.log(assets.value);
+            console.log(displayedAssets.value);
+
+
+
+        })
+        .catch((e) => {
+            message.value = e.response.data.message;
+
+        });
+
+
+
+};
+async function retrieveAssetStatus(assetId){
+    await assetStatusServices.getForAsset(assetId)
+        .then((response) => {
+            assetStatus.value.set(assetId, response.data);
+            
+        })
+        .catch((e) => {
+            message.value = e.response.data.message;
+        })
+}
+async function retrieveAsset(asset) {
+    await assetServices.get(asset.assetId)
+        .then((response) => {
+            generalAssets.value.set(response.data.id, response.data)
+            console.log(generalAssets.value)
+        })
+        .catch((e) => {
+            message.value = e.response.data.message;
+        });
+
+
+}
+async function retrieveMake(makeId, asset) {
+    await makeServices.get(makeId)
+        .then((response) => {
+            asset.make = response.data.make;            
+        })
+        .catch((e) => {
+            message.value = e.response.data.message;
+        });
+
+
+}
+async function retrieveModel(modelId, asset) {
+    await modelServices.get(modelId)
+        .then((response) => {
+            asset.model = response.data.model;
+        })
+        .catch((e) => {
+            message.value = e.response.data.message;
+        });
+
+
+}
+async function retriveType(assetTypeId, asset) {
+    console.log(assetTypeId);
+    await typeServices.get(assetTypeId)
+        .then((response) => {
+            asset.assetType = response.data.name;
+        })
+        .catch((e) => {
+            message.value = e.response;
+        })
+
+};
+
+async function retrieveAssetData(typeId, generalAsset) {
+    console.log(typeId)
+    await assetDataServices.getForType(typeId)
+        .then((response) => {
+            console.log(response.data);
+            generalAsset.dataFields =  response.data;
+        })
+        .catch((e) => {
+            message.value = e.response.data.message;
+        });
+
+
+}
+
+onMounted(
+    async () => {
+        await retrieveSpecificAssets();
+        
+    });
+
+
 
 </script>
 <script>
 export default {
     data() {
         return {
-            headers: [
-                { title: 'Serial #', align: 'start', key: 'Serial#', sortable: false, width: '10%' },
-                { title: 'Asset Type', align: 'start', key: 'AssetType', sortable: false, width: '10%' },
-                { title: 'Make', align: 'start', key: 'AssetName' , width: '10%' },
-                { title: 'Model', align: 'center', key: 'model', sortable: false, width: '10%' },
+          headers: [
+                { title: 'Serial #', align: 'start', key: 'serialNumber', sortable: false, width: '10%' },
+                { title: 'Asset Type', align: 'start', key: 'assetType' , width: '30%' },
+                { title: 'Make', align: 'start', key: 'make', width: '15%' },
+                { title: 'Model', align: 'start', key: 'model', sortable: false, width: '10%' },
                 { title: 'Status', align: 'center', key: 'status', sortable: false, width: '10%' },
                 { title: 'Edit Asset', align: 'center', key: 'edit', sortable: false, width: '10%' },
-                { title: 'Notes', align: 'center', key: 'edit', sortable: false, width: '10%' },
+                { title: 'View Details', align: 'center', key: 'edit', sortable: false, width: '10%' },
 
 
             ],
+            
             filterCats: [
                 { title: "Asset Type" },
                 { title: "Status" },
@@ -123,9 +305,7 @@ export default {
 };
 </script>
 <style>
-v-data-table-virtual-header {
-    height: 1000px;
-}
+    
 </style>
 <template>
     <v-snackbar v-model="snackbar">
@@ -137,58 +317,116 @@ v-data-table-virtual-header {
         </template>
     </v-snackbar>
     <div>
+        
+   
+        
+        <!-- <v-toolbar color="#801529" dense :elevation="8" class="pa-3">
+            <v-toolbar-title>Users</v-toolbar-title> -->
+            
+    
         <v-card
-        class="mx-auto"
-        flat    
-        max-width="1000"
-        >
-
-            <v-card-item>
-            <v-toolbar  class="pa-6 ma-3" color="white" density="prominent" height="15">
-                <v-text-field class="mx-auto" v-model="keyword"  prepend-inner-icon="mdi-magnify" label="Search by name or ID"
+        class="mx-auto pa-6"
+        flat
+        max-width="1250px">
+            <v-app-bar  class="pa-6 mx-auto" color="white" density="prominent" height="15" :elevation="2" flat>
+        
+                <v-app-bar-title>Specific Asset List</v-app-bar-title>
+                <v-text-field class="mx-auto" bg-color="white" v-model="keyword"  prepend-inner-icon="mdi-magnify" label="Search by name or ID"
                     variant="outlined" density="compact" single-line rounded
-                    @click:prepend-inner="searchAsset()" v-on:keyup.enter="searchAsset()">
+                    @click:prepend-inner="searchUser()" v-on:keyup.enter="searchUser()">
                 </v-text-field>
-                <v-btn class="mx-6" height="40"  color="#801529" variant="elevated">
-                        Add Asset
-                    </v-btn>
             <v-menu :close-on-content-click="false"
                     
                 >
                 <template v-slot:activator="{ props }">
-                    <v-btn class="mx-6" height="40" v-bind="props" color="#801529" variant="elevated">
+                    <v-btn class="mx-6" height="40" v-bind="props" color="#811429" variant="elevated">
                         Filters
                     </v-btn>
+                    <v-btn 
+                    @click="directpage('Add Asset')"
+                    class="mx-6" 
+                    height="40"  
+                    color="#801529" 
+                    variant="elevated">
+                        Add Asset 
+                </v-btn>
                 </template>
+                
                 <v-card min-width="300">
                     <v-list>
                         <v-list-item v-for="(item, index) in filterCats" :key="index">
-                            <v-select v-if="item.title == 'Asset Type'" v-model="selectedAssetType" label="Asset Type"
-                                :items="Model" item-title="name" @update:modelValue="filter()" multiple>
+                            <v-select v-if="item.title == 'Asset Type'" v-model="selectedDepartments" label="Asset Type"
+                                :items="departments" item-title="name" @update:modelValue="filter()" multiple>
                             </v-select>
-                            <v-select v-if="item.title == 'Status'" v-model="model" label="Status"
-                                :items="Model" item-title="name" @update:modelValue="filter()" multiple>
+                            <v-select v-model="selectedRoles" v-if="item.title == 'Status'" @update:modelValue="filter()" label="Status" :items="roles"
+                                multiple>
                             </v-select>
 
                         </v-list-item>
                     </v-list>
                 </v-card>
             </v-menu>
-        </v-toolbar> 
-        </v-card-item>
-        </v-card>
-    </div>
-    <div>
+       
+    
+    </v-app-bar>
+    
 
+  
+    <v-card class="pa-6 mx-6">
+      
+      
+        <v-card-item max-width="1250px" location="center">
         <v-data-table-virtual :items=displayedAssets :headers=headers density="comfortable" fixed-header>
 
-
-            <template v-slot:item.edit>
+          <template v-slot:item.edit>
                 <v-btn @click="viewUser(user)" prepend-icon="mdi-pencil">
 
                 </v-btn>
             </template>
+            <template v-slot:item.archive="{ item }">
+               <v-switch
+                v-model="item.archived"
+                @update:modelValue="archive(item)"
+                >
+                
+               </v-switch> 
+               
+            </template>
 
         </v-data-table-virtual>
-    </div>
+        </v-card-item>
+    </v-card>
+</v-card>
+
+
+</div>
+
+    <v-overlay
+        v-model="ArchiveChangeConfirm"
+        class="align-center justify-center"
+      >
+        <v-card class="pa-6">
+            <v-card-title>Confirm change of {{ archivingAsset.model }} {{ archivingAsset.make }} to {{ archivingAsset.archived }}</v-card-title>
+            <v-card-actions>
+            <v-btn @click="archiveConfirm()"
+            class="mx-6"
+            variant="flat"
+            color="green"
+            min-width="150"
+            min-height="40"
+            >
+                Confirm
+            </v-btn>
+            <v-btn
+            @click="cancelArchive()"
+            class="mx-6"
+            variant="outlined"
+            min-width="150"
+            min-height="40"
+            >
+                Cancel
+            </v-btn>
+        </v-card-actions>
+        </v-card>
+      </v-overlay>
 </template>
