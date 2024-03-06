@@ -23,8 +23,11 @@ const message = ref("");
 const keyword = ref("");
 const snackbar = ref(false);
 const roles = ref([]);
-const selectedRoles = ref([]);
-const selectedDepartments = ref([]);
+const selectedStatus = ref([]);
+const selectedModel = ref([]);
+const selectedMake = ref([]);
+const selectedAssetType = ref([]);
+const assetTypes = ref([]);
 const generalAssets = ref(new Map());
 const assetStatus = ref(new Map());
 const archivingAsset = ref(Object);
@@ -36,85 +39,92 @@ function directpage(name){
   if(name === 'Add Asset'){
     router.push({ path: "/AddAsset" });}}
 
-function searchUser() {
-    displayedUsers.value = [];
+    function searchUser() {
+    displayedAssets.value = []; // Change displayedUsers to displayedAssets
     console.log("Search keyword is " + keyword.value);
     if (keyword.value != "") {
-        users.value.forEach(user => {
-            if (user.schoolId != null) {
-                if (user.schoolId.toString().includes(keyword.value)) {
-                    console.log("id match")
-
-                    displayedUsers.value.push(user);
-                };
-            };
-            if (user.fullName != null) {
-                if (user.fullName.toLowerCase().includes(keyword.value.toLocaleLowerCase())) {
-                    console.log("name match")
-                    displayedUsers.value.push(user)
-                };
-            };
+        assets.value.forEach(asset => { // Change users to assets
+            if (asset.serialNumber != null && asset.serialNumber.toString().includes(keyword.value)) {
+                console.log("Serial number match");
+                displayedAssets.value.push(asset);
+            }
+            else if (asset.assetType != null && asset.assetType.toLowerCase().includes(keyword.value.toLowerCase())) {
+                console.log("Asset type match");
+                displayedAssets.value.push(asset);
+            }
+            else if (asset.make != null && asset.make.toLowerCase().includes(keyword.value.toLowerCase())) {
+                console.log("Make match");
+                displayedAssets.value.push(asset);
+            }
+            else if (asset.model != null && asset.model.toLowerCase().includes(keyword.value.toLowerCase())) {
+                console.log("Model match");
+                displayedAssets.value.push(asset);
+            }
         });
-    };
-    if (displayedUsers.value.length == 0) {
+    }
+    if (displayedAssets.value.length == 0) {
         users.value.forEach(user => {
-            displayedUsers.value.push(user);
+            displayedAssets.value.push(user);
         })
         snackbar.value = true;
     };
 };
 function filter () {
-    displayedUsers.value = [];
+    displayedAssets.value = [];
   
-    filterDepartments().forEach(e => {
-        if(!displayedUsers.value.includes(e)) displayedUsers.value.push(e);
+    filterAssetType().forEach(e => {
+        if(!displayedAssets.value.includes(e)) displayedAssets.value.push(e);
     });
-    filterRoles().forEach(e => {
-        if(!displayedUsers.value.includes(e)) displayedUsers.value.push(e);
-    });
-    console.log(displayedUsers.value);
+    // filterStatus().forEach(e => {
+    //     if(!displayedStatus.value.includes(e)) displayedStatus.value.push(e);
+    // });
+    // filterMake().forEach(e => {
+    //     if(!displayedStatus.value.includes(e)) displayedStatus.value.push(e);
+    // });
+    // filterModel().forEach(e => {
+    //     if(!displayedStatus.value.includes(e)) displayedStatus.value.push(e);
+    // });
+    console.log(displayedAssets.value);
     
-    if (displayedUsers.value.length == 0) {
-        users.value.forEach(user => {
-            displayedUsers.value.push(user);
+    if (displayedAssets.value.length == 0) {
+        assets.value.forEach(assets => {
+            displayedAssets.value.push(assets);
         })
     };
 }
 
-function filterDepartments() {
-    var returnedUsers = [];
-    var departmentId = null;
-    users.value.forEach(user => {
-        selectedDepartments.value.forEach(async department => {
-            departments.value.forEach(e => {
-                console.log(e.name + " = " + department + " " + e.id);
+function filterAssetType() {
+    var returnedAssets = [];
+    var assetTypeId = null;
+    assets.value.forEach(specificAsset => {
+        selectedAssetType.value.forEach(async assetType => {
+            assetTypes.value.forEach(type => {
+                console.log(type.name + " = " + assetType + " " + type.id);
 
-                if (e.name == department) {
+                if (type.name == assetType) {
                     console.log("true");
-                    departmentId = e.id
+                    assetTypeId = type.id
                 };
             })
-            console.log("selected departmentID: " + departmentId);
-            console.log("selected user departmentID" + user.departmentId);
-            if (user.departmentId == departmentId) {
-                returnedUsers.push(user);
-                console.log(user);
+            if (specificAsset.assetId == assetTypeId) {
+                returnedAssets.push(specificAsset);
+                console.log(specificAsset);
             };
         })
     })
-    return returnedUsers;
+    return returnedAssets;
 
 }
-function filterRoles() {
-    var returnedUsers = [];
-    users.value.forEach(user => {
+function filterStatus() {
+    var returnedStatus = [];
+    asset.value.forEach(user => {
         selectedRoles.value.forEach(role => {
             if(user.roleType == role){
                 returnedUsers.push(user);
             }
         })
     })
-    return  returnedUsers;
+    return  returnedStatus;
 
 }
 function archive(asset){
@@ -174,14 +184,14 @@ async function retrieveSpecificAssets() {
 
                 asset.description = generalAsset.description;
                 asset.archived = generalAsset.archived;
-                retrieveMake(generalAsset.makeId, asset);
-                // console.log(make);
+                await retrieveMake(generalAsset.makeId, asset);
 
-                retrieveModel(generalAsset.modelId, asset); 
-                retriveType(generalAsset.assetTypeId, asset);
+                await retrieveModel(generalAsset.modelId, asset); 
+                await retriveType(generalAsset.assetTypeId, asset);
                 var generalAsset = generalAssets.value.get(asset.id)
-                retrieveAssetData(asset.assetTypeId, generalAsset);
-                retrieveAssetStatus(asset.id);
+                await retrieveAssetData(generalAsset.assetTypeId, generalAsset);
+                await retrieveAssetStatus(asset.id);
+                if(retrieveAssetStatus)
                 displayedAssets.value.push(asset);
 
             });
@@ -248,12 +258,21 @@ async function retriveType(assetTypeId, asset) {
     await typeServices.get(assetTypeId)
         .then((response) => {
             asset.assetType = response.data.name;
+           
         })
         .catch((e) => {
             message.value = e.response;
         })
 
 };
+async function retrieveTypes() {
+  await typeServices.getAll()
+  .then((response) =>{
+    assetTypes.value = response.data;
+  }
+  
+  )
+}
 
 async function retrieveAssetData(typeId, generalAsset) {
     console.log(typeId)
@@ -272,7 +291,7 @@ async function retrieveAssetData(typeId, generalAsset) {
 onMounted(
     async () => {
         await retrieveSpecificAssets();
-        
+        await retrieveTypes();
     });
 
 
@@ -297,6 +316,8 @@ export default {
             filterCats: [
                 { title: "Asset Type" },
                 { title: "Status" },
+                {title: "Make" },
+                {title: "Model" },
             ],
 
 
@@ -317,13 +338,6 @@ export default {
         </template>
     </v-snackbar>
     <div>
-        
-   
-        
-        <!-- <v-toolbar color="#801529" dense :elevation="8" class="pa-3">
-            <v-toolbar-title>Users</v-toolbar-title> -->
-            
-    
         <v-card
         class="mx-auto pa-6"
         flat
@@ -355,10 +369,16 @@ export default {
                 <v-card min-width="300">
                     <v-list>
                         <v-list-item v-for="(item, index) in filterCats" :key="index">
-                            <v-select v-if="item.title == 'Asset Type'" v-model="selectedDepartments" label="Asset Type"
-                                :items="departments" item-title="name" @update:modelValue="filter()" multiple>
+                            <v-select v-if="item.title == 'Asset Type'" v-model="selectedAssetType" label="Asset Type"
+                                :items="assetTypes" item-title="name" @update:modelValue="filter()" multiple>
                             </v-select>
-                            <v-select v-model="selectedRoles" v-if="item.title == 'Status'" @update:modelValue="filter()" label="Status" :items="roles"
+                            <v-select v-model="selectedStatus" v-if="item.title == 'Status'" @update:modelValue="filter()" label="Status" :items="status"
+                                multiple>
+                            </v-select>
+                            <v-select v-model="selectedMake" v-if="item.title == 'Make'" @update:modelValue="filter()" label="Make" :items="assetMake"
+                                multiple>
+                            </v-select>
+                            <v-select v-model="selectedModel" v-if="item.title == 'Model'" @update:modelValue="filter()" label="Model" :items="assetModel"
                                 multiple>
                             </v-select>
 
