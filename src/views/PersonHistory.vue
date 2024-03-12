@@ -3,6 +3,7 @@ import { ref, onMounted } from "vue";
 import PersonServices from "../services/personServices";
 import { useRouter } from "vue-router";
 import assetStatusServices from "../services/assetStatusServices";
+import specificAssetServices from "../services/specificAssetServices";
 
 const router = useRouter();
 const valid = ref(false);
@@ -37,8 +38,24 @@ async function retrieveAssetStatus(){
   await assetStatusServices.getForPerson(props.id)
   .then ((response) => {
       assetStatus.value = response.data;
-      console.log(response);
-   
+      console.log('assetStatus', response);
+      console.log('test',assetStatus.value[0].specificAsset.status);
+
+      assetStatus.value.forEach(async asset => {
+        if(assetStatus.value.specificAsset.status == "checked-out") {
+          await retrieveMake();
+          await retrieveModel();
+          displayCheckedOutAsset.value.push(asset);
+        }
+        console.log(asset);
+
+        if(assetStatus.value.specificAsset.status  == "checked-in") {
+          await retrieveMake();
+          await retrieveModel();
+          displayCheckInAsset.value.push(asset);
+        }
+      })
+
     }
   )
   .catch ((e) =>  {
@@ -47,9 +64,34 @@ async function retrieveAssetStatus(){
 };
 
 
+async function retrieveMake(makeId, asset) {
+    await makeServices.get(makeId)
+        .then((response) => {
+            asset.make = response.data.make;            
+        })
+        .catch((e) => {
+            message.value = e.response.data.message;
+        });
+
+
+}
+async function retrieveModel(modelId, asset) {
+    await modelServices.get(modelId)
+        .then((response) => {
+            asset.model = response.data.model;
+        })
+        .catch((e) => {
+            message.value = e.response.data.message;
+        });
+
+
+}
+
+
 onMounted(async () => {
   await retrievePerson();
   await retrieveAssetStatus();
+ 
 });
 </script>
 
