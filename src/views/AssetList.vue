@@ -39,7 +39,7 @@ function directpage(name){
   if(name === 'Add Asset'){
     router.push({ path: "/AddAsset" });}}
 
-    function searchUser() {
+    function searchAsset() {
     displayedAssets.value = []; // Change displayedUsers to displayedAssets
     console.log("Search keyword is " + keyword.value);
     if (keyword.value != "") {
@@ -63,8 +63,8 @@ function directpage(name){
         });
     }
     if (displayedAssets.value.length == 0) {
-        users.value.forEach(user => {
-            displayedAssets.value.push(user);
+        assets.value.forEach(asset => {
+            displayedAssets.value.push(asset);
         })
         snackbar.value = true;
     };
@@ -307,7 +307,7 @@ export default {
                 { title: 'Make', align: 'start', key: 'make', width: '15%' },
                 { title: 'Model', align: 'start', key: 'model', sortable: false, width: '10%' },
                 { title: 'Status', align: 'center', key: 'status', sortable: false, width: '10%' },
-                { title: 'Edit Asset', align: 'center', key: 'edit', sortable: false, width: '10%' },
+                { title: 'Check in/out', align: 'center', key: 'edit', sortable: false, width: '10%' },
                 { title: 'View Details', align: 'center', key: 'edit', sortable: false, width: '10%' },
 
 
@@ -315,9 +315,6 @@ export default {
             
             filterCats: [
                 { title: "Asset Type" },
-                { title: "Status" },
-                {title: "Make" },
-                {title: "Model" },
             ],
 
 
@@ -347,7 +344,7 @@ export default {
                 <v-app-bar-title>Specific Asset List</v-app-bar-title>
                 <v-text-field class="mx-auto" bg-color="white" v-model="keyword"  prepend-inner-icon="mdi-magnify" label="Search by name or ID"
                     variant="outlined" density="compact" single-line rounded
-                    @click:prepend-inner="searchUser()" v-on:keyup.enter="searchUser()">
+                    @click:prepend-inner="searchAsset()" v-on:keyup.enter="searchAsset()">
                 </v-text-field>
             <v-menu :close-on-content-click="false"
                     
