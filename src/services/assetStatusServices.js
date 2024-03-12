@@ -22,5 +22,8 @@ export default {
   getForAsset(id) {
     return apiClient.get(`/assetStatus/asset/${id}`);
   },
- 
+  getForPerson(id) {
+    return apiClient.get(`/assetStatus/person/${id}`);
+  },
+  
 };
