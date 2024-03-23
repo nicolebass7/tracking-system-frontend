@@ -66,7 +66,7 @@ onMounted(async () => {
   <div>
     <v-container>
       <v-toolbar>
-        <v-toolbar-title>Add Asset</v-toolbar-title>
+        <v-toolbar-title>Add Specific Asset</v-toolbar-title>
       </v-toolbar>
       <br />
       <h4>{{ message }}</h4>
@@ -80,19 +80,21 @@ onMounted(async () => {
           cols="12"
           sm="6"
         >
-        <v-autocomplete
+        <v-combobox
   label="Make"
   :items="['Apple']"
-></v-autocomplete></v-col>
+  placeholder="Enter new make"
+></v-combobox></v-col>
         <v-col
           cols="12"
           sm="6"
         >
-        <v-autocomplete
+        <v-combobox
   label="Model"
   @update:modelValue="ModelSelected()"
-  :items="[]"
-></v-autocomplete></v-col>
+  :items="['macbook']"
+  placeholder="Enter new model"
+></v-combobox></v-col>
         <v-col
           cols="12"
           sm="6"
@@ -106,7 +108,6 @@ onMounted(async () => {
           class="ma-auto"
         ></v-text-field></v-col>
 <v-select cols="12" sm="6" class="ma-auto" :items=departments v-model="saveInfo.AssetType"  item-value="id" item-title="name" label="AssetType">
- 
 </v-select>
 </v-row>  
 <v-row>
