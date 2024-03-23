@@ -23,4 +23,5 @@ export default {
     return apiClient.get(`/assetData/assetType/${id}`);
   },
  
-};
+};  
+

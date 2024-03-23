@@ -11,8 +11,10 @@ import specificAssetServices from "../services/specificAssetServices";
 import makeServices from "../services/makeServices";
 import modelServices from "../services/modelServices";
 import typeServices from "../services/assetTypeServices";
+
 import assetDataServices from "../services/assetDataServices";
 import assetStatusServices from "../services/assetStatusServices";
+
 
 
 const router = useRouter();
@@ -38,6 +40,7 @@ const changeRoleUser = ref("");
 function directpage(name){
   if(name === 'Add Asset'){
     router.push({ path: "/AddAsset" });}}
+
 
     function searchAsset() {
     displayedAssets.value = []; // Change displayedUsers to displayedAssets
@@ -118,13 +121,16 @@ function filterAssetType() {
 function filterStatus() {
     var returnedStatus = [];
     asset.value.forEach(user => {
+
         selectedRoles.value.forEach(role => {
             if(user.roleType == role){
                 returnedUsers.push(user);
             }
         })
     })
+
     return  returnedStatus;
+
 
 }
 function archive(asset){
@@ -167,6 +173,7 @@ async function cancelArchive(){
         }
     });
     ArchiveChangeConfirm.value = false;
+
 }
 
 async function retrieveSpecificAssets() {
@@ -288,6 +295,7 @@ async function retrieveAssetData(typeId, generalAsset) {
 
 }
 
+
 onMounted(
     async () => {
         await retrieveSpecificAssets();
@@ -307,6 +315,7 @@ export default {
                 { title: 'Make', align: 'start', key: 'make', width: '15%' },
                 { title: 'Model', align: 'start', key: 'model', sortable: false, width: '10%' },
                 { title: 'Status', align: 'center', key: 'status', sortable: false, width: '10%' },
+
                 { title: 'Check in/out', align: 'center', key: 'edit', sortable: false, width: '10%' },
                 { title: 'View Details', align: 'center', key: 'edit', sortable: false, width: '10%' },
 
@@ -335,6 +344,13 @@ export default {
         </template>
     </v-snackbar>
     <div>
+        
+   
+        
+        <!-- <v-toolbar color="#801529" dense :elevation="8" class="pa-3">
+            <v-toolbar-title>Users</v-toolbar-title> -->
+            
+    
         <v-card
         class="mx-auto pa-6"
         flat
@@ -344,7 +360,7 @@ export default {
                 <v-app-bar-title>Specific Asset List</v-app-bar-title>
                 <v-text-field class="mx-auto" bg-color="white" v-model="keyword"  prepend-inner-icon="mdi-magnify" label="Search by name or ID"
                     variant="outlined" density="compact" single-line rounded
-                    @click:prepend-inner="searchAsset()" v-on:keyup.enter="searchAsset()">
+                    @click:prepend-inner="searchUser()" v-on:keyup.enter="searchUser()">
                 </v-text-field>
             <v-menu :close-on-content-click="false"
                     
@@ -366,6 +382,7 @@ export default {
                 <v-card min-width="300">
                     <v-list>
                         <v-list-item v-for="(item, index) in filterCats" :key="index">
+
                             <v-select v-if="item.title == 'Asset Type'" v-model="selectedAssetType" label="Asset Type"
                                 :items="assetTypes" item-title="name" @update:modelValue="filter()" multiple>
                             </v-select>
