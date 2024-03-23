@@ -402,10 +402,9 @@ export default {
             headers: [
 
                 { title: 'Asset Type', align: 'start', key: 'assetType', width: '30%' },
-                { title: 'Make', align: 'center', key: 'make', width: '15%' },
-                { title: 'Model', align: 'center', key: 'model', sortable: false, width: '25%' },
-                { title: 'Archive Asset', align: 'center', key: 'archive', sortable: false, width: '15%' },
-                { title: 'Modify Data Fields', align: 'center', key: 'modifyData', sortable: false, width: '15%' }
+                { title: 'Make', align: 'left', key: 'make', width: '20%' },
+                { title: 'Model', align: 'left', key: 'model', sortable: false, width: '25%' },
+                { title: 'Archive Asset', align: 'middle', key: 'archive', sortable: false, width: '10%' },
             ],
             roleChoices: [
 
@@ -498,9 +497,9 @@ export default {
 
 
                         <template v-slot:item.archive="{ item }">
-                            <v-switch v-model="item.archived" @update:modelValue="archive(item)">
+                            <v-checkbox v-model="item.archived" @update:modelValue="archive(item)">
 
-                            </v-switch>
+                            </v-checkbox>
 
                         </template>
 
@@ -528,6 +527,7 @@ export default {
             </v-card-actions>
         </v-card>
     </v-overlay>
+    </template>
 
 
     
