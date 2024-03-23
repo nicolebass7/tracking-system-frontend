@@ -12,6 +12,9 @@ import makeServices from "../services/makeServices";
 import modelServices from "../services/modelServices";
 import typeServices from "../services/assetTypeServices";
 
+import assetDataServices from "../services/assetDataServices";
+import assetStatusServices from "../services/assetStatusServices";
+
 
 
 const router = useRouter();
@@ -22,8 +25,13 @@ const message = ref("");
 const keyword = ref("");
 const snackbar = ref(false);
 const roles = ref([]);
-const selectedRoles = ref([]);
-const selectedDepartments = ref([]);
+const selectedStatus = ref([]);
+const selectedModel = ref([]);
+const selectedMake = ref([]);
+const selectedAssetType = ref([]);
+const assetTypes = ref([]);
+const generalAssets = ref(new Map());
+const assetStatus = ref(new Map());
 const archivingAsset = ref(Object);
 const ArchiveChangeConfirm = ref(false);
 const confirmRole = ref("");
@@ -33,85 +41,96 @@ function directpage(name){
   if(name === 'Add Asset'){
     router.push({ path: "/AddAsset" });}}
 
-function searchUser() {
-    displayedUsers.value = [];
+
+    function searchAsset() {
+    displayedAssets.value = []; // Change displayedUsers to displayedAssets
     console.log("Search keyword is " + keyword.value);
     if (keyword.value != "") {
-        users.value.forEach(user => {
-            if (user.schoolId != null) {
-                if (user.schoolId.toString().includes(keyword.value)) {
-                    console.log("id match")
-
-                    displayedUsers.value.push(user);
-                };
-            };
-            if (user.fullName != null) {
-                if (user.fullName.toLowerCase().includes(keyword.value.toLocaleLowerCase())) {
-                    console.log("name match")
-                    displayedUsers.value.push(user)
-                };
-            };
+        assets.value.forEach(asset => { // Change users to assets
+            if (asset.serialNumber != null && asset.serialNumber.toString().includes(keyword.value)) {
+                console.log("Serial number match");
+                displayedAssets.value.push(asset);
+            }
+            else if (asset.assetType != null && asset.assetType.toLowerCase().includes(keyword.value.toLowerCase())) {
+                console.log("Asset type match");
+                displayedAssets.value.push(asset);
+            }
+            else if (asset.make != null && asset.make.toLowerCase().includes(keyword.value.toLowerCase())) {
+                console.log("Make match");
+                displayedAssets.value.push(asset);
+            }
+            else if (asset.model != null && asset.model.toLowerCase().includes(keyword.value.toLowerCase())) {
+                console.log("Model match");
+                displayedAssets.value.push(asset);
+            }
         });
-    };
-    if (displayedUsers.value.length == 0) {
-        users.value.forEach(user => {
-            displayedUsers.value.push(user);
+    }
+    if (displayedAssets.value.length == 0) {
+        assets.value.forEach(asset => {
+            displayedAssets.value.push(asset);
         })
         snackbar.value = true;
     };
 };
 function filter () {
-    displayedUsers.value = [];
+    displayedAssets.value = [];
   
-    filterDepartments().forEach(e => {
-        if(!displayedUsers.value.includes(e)) displayedUsers.value.push(e);
+    filterAssetType().forEach(e => {
+        if(!displayedAssets.value.includes(e)) displayedAssets.value.push(e);
     });
-    filterRoles().forEach(e => {
-        if(!displayedUsers.value.includes(e)) displayedUsers.value.push(e);
-    });
-    console.log(displayedUsers.value);
+    // filterStatus().forEach(e => {
+    //     if(!displayedStatus.value.includes(e)) displayedStatus.value.push(e);
+    // });
+    // filterMake().forEach(e => {
+    //     if(!displayedStatus.value.includes(e)) displayedStatus.value.push(e);
+    // });
+    // filterModel().forEach(e => {
+    //     if(!displayedStatus.value.includes(e)) displayedStatus.value.push(e);
+    // });
+    console.log(displayedAssets.value);
     
-    if (displayedUsers.value.length == 0) {
-        users.value.forEach(user => {
-            displayedUsers.value.push(user);
+    if (displayedAssets.value.length == 0) {
+        assets.value.forEach(assets => {
+            displayedAssets.value.push(assets);
         })
     };
 }
 
-function filterDepartments() {
-    var returnedUsers = [];
-    var departmentId = null;
-    users.value.forEach(user => {
-        selectedDepartments.value.forEach(async department => {
-            departments.value.forEach(e => {
-                console.log(e.name + " = " + department + " " + e.id);
+function filterAssetType() {
+    var returnedAssets = [];
+    var assetTypeId = null;
+    assets.value.forEach(specificAsset => {
+        selectedAssetType.value.forEach(async assetType => {
+            assetTypes.value.forEach(type => {
+                console.log(type.name + " = " + assetType + " " + type.id);
 
-                if (e.name == department) {
+                if (type.name == assetType) {
                     console.log("true");
-                    departmentId = e.id
+                    assetTypeId = type.id
                 };
             })
-            console.log("selected departmentID: " + departmentId);
-            console.log("selected user departmentID" + user.departmentId);
-            if (user.departmentId == departmentId) {
-                returnedUsers.push(user);
-                console.log(user);
+            if (specificAsset.assetId == assetTypeId) {
+                returnedAssets.push(specificAsset);
+                console.log(specificAsset);
             };
         })
     })
-    return returnedUsers;
+    return returnedAssets;
 
 }
-function filterRoles() {
-    var returnedUsers = [];
-    users.value.forEach(user => {
+function filterStatus() {
+    var returnedStatus = [];
+    asset.value.forEach(user => {
+
         selectedRoles.value.forEach(role => {
             if(user.roleType == role){
                 returnedUsers.push(user);
             }
         })
     })
-    return  returnedUsers;
+
+    return  returnedStatus;
+
 
 }
 function archive(asset){
@@ -154,6 +173,7 @@ async function cancelArchive(){
         }
     });
     ArchiveChangeConfirm.value = false;
+
 }
 
 async function retrieveSpecificAssets() {
@@ -163,12 +183,23 @@ async function retrieveSpecificAssets() {
         
             assets.value.forEach(async asset => {
                 console.log(asset);
-                retrieveAsset(asset);
-                retrieveMake(asset);
-                retrieveModel(asset);
-                retriveType(asset);
-                displayedAssets.value.push(asset);
+                if(!generalAssets.value.has(asset.assetId)){
+                    await retrieveAsset(asset);
+                }
+                var generalAsset = generalAssets.value.get(asset.assetId);
+                console.log(generalAsset);
 
+                asset.description = generalAsset.description;
+                asset.archived = generalAsset.archived;
+                await retrieveMake(generalAsset.makeId, asset);
+
+                await retrieveModel(generalAsset.modelId, asset); 
+                await retriveType(generalAsset.assetTypeId, asset);
+                var generalAsset = generalAssets.value.get(asset.id)
+                await retrieveAssetData(generalAsset.assetTypeId, generalAsset);
+                await retrieveAssetStatus(asset.id);
+                if(retrieveAssetStatus)
+                displayedAssets.value.push(asset);
 
             });
             console.log(assets.value);
@@ -185,12 +216,21 @@ async function retrieveSpecificAssets() {
 
 
 };
+async function retrieveAssetStatus(assetId){
+    await assetStatusServices.getForAsset(assetId)
+        .then((response) => {
+            assetStatus.value.set(assetId, response.data);
+            
+        })
+        .catch((e) => {
+            message.value = e.response.data.message;
+        })
+}
 async function retrieveAsset(asset) {
     await assetServices.get(asset.assetId)
         .then((response) => {
-
-            asset.description = response.data.description;
-            console.log(response.data.name)
+            generalAssets.value.set(response.data.id, response.data)
+            console.log(generalAssets.value)
         })
         .catch((e) => {
             message.value = e.response.data.message;
@@ -198,12 +238,10 @@ async function retrieveAsset(asset) {
 
 
 }
-async function retrieveMake(asset) {
-    await makeServices.get(asset.makeId)
+async function retrieveMake(makeId, asset) {
+    await makeServices.get(makeId)
         .then((response) => {
-
-            asset.make = response.data.make;
-            console.log(response.data.name)
+            asset.make = response.data.make;            
         })
         .catch((e) => {
             message.value = e.response.data.message;
@@ -211,13 +249,10 @@ async function retrieveMake(asset) {
 
 
 }
-async function retrieveModel(asset) {
-    console.log(asset)
-    await modelServices.get(asset.modelId)
+async function retrieveModel(modelId, asset) {
+    await modelServices.get(modelId)
         .then((response) => {
-
             asset.model = response.data.model;
-            console.log(response.data.name);
         })
         .catch((e) => {
             message.value = e.response.data.message;
@@ -225,24 +260,46 @@ async function retrieveModel(asset) {
 
 
 }
-async function retriveType(asset) {
-    await typeServices.get(asset.assetTypeId)
+async function retriveType(assetTypeId, asset) {
+    console.log(assetTypeId);
+    await typeServices.get(assetTypeId)
         .then((response) => {
             asset.assetType = response.data.name;
-            console.log("Asset Type is " + asset.assetType)
+           
         })
         .catch((e) => {
-            message.value = e.response.data.message;
+            message.value = e.response;
         })
 
 };
+async function retrieveTypes() {
+  await typeServices.getAll()
+  .then((response) =>{
+    assetTypes.value = response.data;
+  }
+  
+  )
+}
 
+async function retrieveAssetData(typeId, generalAsset) {
+    console.log(typeId)
+    await assetDataServices.getForType(typeId)
+        .then((response) => {
+            console.log(response.data);
+            generalAsset.dataFields =  response.data;
+        })
+        .catch((e) => {
+            message.value = e.response.data.message;
+        });
+
+
+}
 
 
 onMounted(
     async () => {
-        await retrieveAssets();
-        
+        await retrieveSpecificAssets();
+        await retrieveTypes();
     });
 
 
@@ -258,7 +315,8 @@ export default {
                 { title: 'Make', align: 'start', key: 'make', width: '15%' },
                 { title: 'Model', align: 'start', key: 'model', sortable: false, width: '10%' },
                 { title: 'Status', align: 'center', key: 'status', sortable: false, width: '10%' },
-                { title: 'Edit Asset', align: 'center', key: 'edit', sortable: false, width: '10%' },
+
+                { title: 'Check in/out', align: 'center', key: 'edit', sortable: false, width: '10%' },
                 { title: 'View Details', align: 'center', key: 'edit', sortable: false, width: '10%' },
 
 
@@ -266,7 +324,6 @@ export default {
             
             filterCats: [
                 { title: "Asset Type" },
-                { title: "Status" },
             ],
 
 
@@ -325,10 +382,17 @@ export default {
                 <v-card min-width="300">
                     <v-list>
                         <v-list-item v-for="(item, index) in filterCats" :key="index">
-                            <v-select v-if="item.title == 'Asset Type'" v-model="selectedDepartments" label="Asset Type"
-                                :items="departments" item-title="name" @update:modelValue="filter()" multiple>
+
+                            <v-select v-if="item.title == 'Asset Type'" v-model="selectedAssetType" label="Asset Type"
+                                :items="assetTypes" item-title="name" @update:modelValue="filter()" multiple>
                             </v-select>
-                            <v-select v-model="selectedRoles" v-if="item.title == 'Status'" @update:modelValue="filter()" label="Status" :items="roles"
+                            <v-select v-model="selectedStatus" v-if="item.title == 'Status'" @update:modelValue="filter()" label="Status" :items="status"
+                                multiple>
+                            </v-select>
+                            <v-select v-model="selectedMake" v-if="item.title == 'Make'" @update:modelValue="filter()" label="Make" :items="assetMake"
+                                multiple>
+                            </v-select>
+                            <v-select v-model="selectedModel" v-if="item.title == 'Model'" @update:modelValue="filter()" label="Model" :items="assetModel"
                                 multiple>
                             </v-select>
 
