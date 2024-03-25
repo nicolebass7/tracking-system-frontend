@@ -13,12 +13,12 @@ console.log('user', user.userId);
 const checkoutAsset = ref({
   id: null,
   assetType: "",
-  model: "",
   startDate: "",
   endDate: "",
-  name: "",
-  returning: "",
   assetSerialNum:"",
+  person:"",
+  building:"",
+  room:"",
   
   
 });
@@ -40,11 +40,11 @@ const checkoutAsset = ref({
 async function saveInfo() {
     const data = {
     assetType: checkoutAsset.value.assetType,
-    model: checkoutAsset.value.model,
     startDate: checkoutAsset.value.startDate,
     endDate: checkoutAsset.value.endDate,
-    name: checkoutAsset.value.name,
-    returning: checkoutAsset.value.returning,
+    person: checkoutAsset.value.person,
+    building: checkoutAsset.value.building,
+    room: checkoutAsset.value.room
 
   };
 
@@ -95,7 +95,7 @@ onMounted(async () => {
   <div>
     <v-container>
       <v-toolbar>
-        <v-toolbar-title>Checkout Asset</v-toolbar-title>
+        <v-toolbar-title></v-toolbar-title>
       </v-toolbar>
 
       <br />
@@ -104,30 +104,41 @@ onMounted(async () => {
 
       <v-form ref="form" v-model="valid" lazy validation>
 
+        <v-container fluid>
+          <v-radio-group
+          v-model="inline"
+          inline
+          >
+            <v-radio
+              label="person"
+              value="person"
+            ></v-radio>
+            <v-radio
+              label="building"
+              value="building"
+            ></v-radio>
+          </v-radio-group>
+        </v-container>
+
         <v-responsive
         max-width="800">
-
+      
         <v-row>
+          <v-col
+          cols="12"
+          sm="6"
+        >
+        <v-select class="select" :items=departments v-model="saveInfo.AssetType"  item-value="id" item-title="name" label="AssetType">
+        </v-select> </v-col>
         <v-col
           cols="12"
           sm="6"
         >
         <v-text-field
-          v-model="saveInfo.name"
-          id="name"
-          :counter="50"
-          label="Name"
-          required
-        ></v-text-field></v-col>
-        <v-col
-          cols="12"
-          sm="6"
-        >
-        <v-text-field
-          v-model="saveInfo.model"
+          v-model="saveInfo.assetSerialNum"
           id="model"
           :counter="50"
-          label="Asset Model "
+          label="Serial Number "
           required
         ></v-text-field></v-col>
         <v-col
@@ -157,29 +168,35 @@ onMounted(async () => {
           sm="6"
         >
         <v-text-field
-          v-model="saveInfo.assetSerialNum"
+          v-model="saveInfo.person"
           id="name"
           :counter="50"
-          label="Asset Serial Number "
+          label="Person"
           required
         ></v-text-field></v-col>
-
-
-<v-select class="select" :items=departments v-model="saveInfo.AssetType"  item-value="id" item-title="name" label="AssetType">
- 
-</v-select>
-<v-col
+        <v-col
           cols="12"
           sm="6"
         >
-<v-checkbox
-            v-model="ex4"
-            label="Return Asset"
-            value="ReturnAsset"
-            hide-details
-          ></v-checkbox></v-col>
-
-</v-row>   </v-responsive>
+        <v-text-field
+          v-model="saveInfo.building"
+          id="name"
+          :counter="50"
+          label="Building"
+          required
+        ></v-text-field></v-col>
+        <v-col
+          cols="12"
+          sm="6"
+        >
+        <v-text-field
+          v-model="saveInfo.room"
+          id="name"
+          :counter="50"
+          label="Room"
+          required
+        ></v-text-field></v-col>
+        </v-row>   </v-responsive>
 
    
         <v-btn

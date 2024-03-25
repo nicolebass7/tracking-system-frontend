@@ -72,6 +72,13 @@ const router = createRouter({
     component: addAsset,
   },
 
+  {
+    path: "/checkoutAsset",
+    name: "checkoutAsset",
+    component: checkoutAsset,
+    props: true,
+  },
+
     {
       path: "/PersonHistory:id",
       name: "PersonHistory",
