@@ -1,6 +1,5 @@
-import { VContainer } from 'vuetify/lib/components';
-
 <style scoped></style>
+
 <script setup>
 
 
@@ -10,6 +9,7 @@ import assetServices from "../services/assetServices";
 import makeServices from "../services/makeServices";
 import modelServices from "../services/modelServices";
 import typeServices from "../services/assetTypeServices";
+import assetDataServices from "../services/assetDataServices";
 
 
 
@@ -17,105 +17,232 @@ const router = useRouter();
 const assets = ref([]);
 const displayedAssets = ref([]);
 const makes = ref([]);
+const displayedMakes = ref([]);
+const selectedMakes = ref([]);
+const models = ref([]);
+const displayedModels = ref([]);
+const selectedModels = ref([]);
 const message = ref("");
 const keyword = ref("");
 const snackbar = ref(false);
-const roles = ref([]);
-const selectedRoles = ref([]);
-const selectedDepartments = ref([]);
-const archivingAsset = ref(Object);
+const types = ref([]);
+const displayedTypes = ref([]);
+const selectedTypes = ref([]);
+const dataFieldMap = ref(new Map());
+const selectedAsset = ref(Object);
 const ArchiveChangeConfirm = ref(false);
-const confirmRole = ref("");
-const changeRoleUser = ref("");
+const showArchvied = ref(false);
 
-function searchUser() {
-    displayedUsers.value = [];
+
+
+function filterSearch() {
+    var returnedAssets = [];
     console.log("Search keyword is " + keyword.value);
     if (keyword.value != "") {
-        users.value.forEach(user => {
-            if (user.schoolId != null) {
-                if (user.schoolId.toString().includes(keyword.value)) {
-                    console.log("id match")
+        assets.value.forEach(asset => {
+            if (asset.assetType != null) {
+                if (asset.assetType.toLowerCase().includes(keyword.value.toLowerCase())) {
+                    console.log("type match")
 
-                    displayedUsers.value.push(user);
+                    returnedAssets.push(asset);
                 };
             };
-            if (user.fullName != null) {
-                if (user.fullName.toLowerCase().includes(keyword.value.toLocaleLowerCase())) {
-                    console.log("name match")
-                    displayedUsers.value.push(user)
+            if (asset.make != null) {
+                if (asset.make.toLowerCase().includes(keyword.value.toLocaleLowerCase())) {
+                    console.log("make match")
+                    returnedAssets.push(asset)
                 };
             };
+            if (asset.model != null) {
+                if (asset.model.toLowerCase().includes(keyword.value.toLocaleLowerCase())) {
+                    console.log("make match")
+                    returnedAssets.push(asset)
+                };
+            };
+            if(returnedAssets.length == 0){
+                snackbar.value = true;
+            }
+            else{
+                snackbar.value = false;
+            }
         });
     };
-    if (displayedUsers.value.length == 0) {
-        users.value.forEach(user => {
-            displayedUsers.value.push(user);
-        })
-        snackbar.value = true;
-    };
+    return returnedAssets;
 };
-function filter () {
-    displayedUsers.value = [];
-  
-    filterDepartments().forEach(e => {
-        if(!displayedUsers.value.includes(e)) displayedUsers.value.push(e);
+function filter() {
+    displayedAssets.value = [];
+
+    filterTypes().forEach(e => {
+        if (!displayedAssets.value.includes(e)) {
+            displayedAssets.value.push(e);
+        }
     });
-    filterRoles().forEach(e => {
-        if(!displayedUsers.value.includes(e)) displayedUsers.value.push(e);
+    filterMakes().forEach(e => {
+        if (!displayedAssets.value.includes(e)) {
+            displayedAssets.value.push(e);
+        }
     });
-    console.log(displayedUsers.value);
-    
-    if (displayedUsers.value.length == 0) {
-        users.value.forEach(user => {
-            displayedUsers.value.push(user);
+    filterModels().forEach(e => {
+        if (!displayedAssets.value.includes(e)) {
+            displayedAssets.value.push(e);
+        }
+    });
+
+    filterSearch().forEach(e => {
+        if (!displayedAssets.value.includes(e)) {
+            displayedAssets.value.push(e);
+        }
+    })
+    if (displayedAssets.value.length == 0) {
+        assets.value.forEach(asset => {
+            displayedAssets.value.push(asset);
         })
     };
+    filterArchived();
+    filterDisplayedModels();
+};
+
+function filterArchived() {
+
+    if (showArchvied.value == false) {
+
+        displayedAssets.value.forEach(asset => {
+            if (asset.archived == true) {
+                const indx = displayedAssets.value.findIndex(displayedAsset => displayedAsset == asset);
+                displayedAssets.value.splice(indx, indx >= 0 ? 1 : 0);
+            }
+        });
+        displayedTypes.value = [];
+        types.value.forEach(type => {
+            var included = false;
+            displayedAssets.value.forEach(asset => {
+                if (type.name == asset.assetType) {
+                    included = true;
+                }
+            })
+
+            if (included) {
+                console.log(type);
+                displayedTypes.value.push(type);
+            }
+
+
+        });
+        displayedMakes.value = [];
+        makes.value.forEach(make => {
+            var included = false;
+            displayedAssets.value.forEach(asset => {
+                console.log(make.id + "=" + asset.makeId);
+                if (make.id == asset.makeId) {
+                    included = true;
+                }
+            })
+
+            if (included) {
+                displayedMakes.value.push(make);
+            }
+
+
+        })
+        
+    }
+    else {
+        displayedTypes.value = [];
+        displayedMakes.value = [];
+        types.value.forEach(type => {
+            displayedTypes.value.push(type);
+        });
+        makes.value.forEach(make => {
+            displayedMakes.value.push(make)
+        });
+    }
 }
+function filterDisplayedModels(){
+    displayedModels.value = [];
+        console.log(models.value);
+        models.value.forEach(model => {
+            console.log()
+            var included = false;
+            displayedAssets.value.forEach(asset => {
+                if (model.id == asset.modelId) {
+                    included = true;
+                };
+            });
 
-function filterDepartments() {
-    var returnedUsers = [];
-    var departmentId = null;
-    users.value.forEach(user => {
-        selectedDepartments.value.forEach(async department => {
-            departments.value.forEach(e => {
-                console.log(e.name + " = " + department + " " + e.id);
+            if (included) {
+                console.log(model);
+                displayedModels.value.push(model);
+            };
 
-                if (e.name == department) {
-                    console.log("true");
-                    departmentId = e.id
+        });
+    
+};
+function filterTypes() {
+    var returnedAssets = [];
+    var typeId = null;
+    assets.value.forEach(asset => {
+        selectedTypes.value.forEach(type => {
+            types.value.forEach(e => {
+
+                if (e.name == type) {
+                    typeId = e.id
                 };
             })
-            console.log("selected departmentID: " + departmentId);
-            console.log("selected user departmentID" + user.departmentId);
-            if (user.departmentId == departmentId) {
-                returnedUsers.push(user);
-                console.log(user);
+            if (asset.assetTypeId == typeId) {
+                returnedAssets.push(asset);
             };
         })
     })
-    return returnedUsers;
+    return returnedAssets;
 
 }
-function filterRoles() {
-    var returnedUsers = [];
-    users.value.forEach(user => {
-        selectedRoles.value.forEach(role => {
-            if(user.roleType == role){
-                returnedUsers.push(user);
-            }
+
+function filterMakes() {
+    var returnedAssets = [];
+    var makeId = null;
+    assets.value.forEach(asset => {
+        selectedMakes.value.forEach(make => {
+            makes.value.forEach(e => {
+                if (e.make == make) {
+                    makeId = e.id;
+                };
+            })
+            if (asset.makeId == makeId) {
+                returnedAssets.push(asset);
+            };
         })
     })
-    return  returnedUsers;
+    return returnedAssets;
+}
+
+function filterModels() {
+    var returnedAssets = [];
+    var modelId = null;
+    assets.value.forEach(asset => {
+        selectedModels.value.forEach(model => {
+            models.value.forEach(e => {
+                if (e.model == model) {
+                    modelId = e.id;
+                };
+            })
+            if (asset.modelId == modelId) {
+                returnedAssets.push(asset);
+            };
+        })
+    })
+    return returnedAssets;
+
+
 
 }
-function archive(asset){
-    archivingAsset.value = asset;
+
+function archive(asset) {
+    selectedAsset.value = asset;
     ArchiveChangeConfirm.value = true
-    
+
 }
 async function archiveConfirm() {
-    if (archivingAsset.value.archived == true) {
+    if (selectedAsset.value.archived == true) {
         var archiveVal = true;
         console.log("Status should change to true")
     }
@@ -126,23 +253,23 @@ async function archiveConfirm() {
         archived: archiveVal,
     }
     console.log(requestData)
-    await assetServices.update(archivingAsset.value.id, requestData)
-    .then((response) => {
-        console.log("Archived")
-        console.log(response)
-    })
-    .catch((e) =>{
-        message.value = e.response;
+    await assetServices.update(selectedAsset.value.id, requestData)
+        .then((response) => {
+            console.log("Archived")
+            console.log(response)
+        })
+        .catch((e) => {
+            message.value = e.response;
 
-    });
+        });
     ArchiveChangeConfirm.value = false;
 }
 
-async function cancelArchive(){
-    
+async function cancelArchive() {
+
     assets.value.forEach(asset => {
-        if(asset.id == archivingAsset.value.id){
-            if(archivingAsset.value.archived == false){
+        if (asset.id == selectedAsset.value.id) {
+            if (selectedAsset.value.archived == false) {
                 asset.archived = true;
             }
             else asset.archived = false;
@@ -150,53 +277,25 @@ async function cancelArchive(){
     });
     ArchiveChangeConfirm.value = false;
 }
-async function changeRole() {
-    const requestData ={
-        roleType: confirmRole.value.toLowerCase(),
-    }
-    console.log(changeRoleUser.value.id)
-    console.log(requestData)
-    await userServices.update(changeRoleUser.value.id, requestData)
-    .then(() => {
-        roleChangeConfirm.value = false;
-        roles.value = [];
-        users.value.forEach(user => {
-            if(!roles.value.includes(user.roleType)){
-                roles.value.push(user.roleType);
-            }
-        })
-        for(var i=0; i < selectedRoles.value.length; i++){
-            if(!roles.value.includes(selectedRoles.value[i])){
-                selectedRoles.value.splice(i, 1);
-            };
-        }
-        filter();
-        
-    })
-    .catch((e) =>{
-        message.value = e.response;
-
-    });
-   // roleChangeConfirm.value = false;
-    
-}
 
 async function retrieveAssets() {
     await assetServices.getAll()
         .then(async (response) => {
             assets.value = response.data;
-        
+
             assets.value.forEach(async asset => {
-                console.log(asset);
                 retrieveMake(asset);
                 retrieveModel(asset);
                 retriveType(asset);
+                retrieveData(asset);
+                if (!dataFieldMap.value.has(asset.assetTypeId)) {
+                    retrieveDataFieldForType(asset);
+                }
                 displayedAssets.value.push(asset);
 
 
             });
-            console.log(assets.value);
-            console.log(displayedAssets.value);
+
 
 
 
@@ -209,12 +308,27 @@ async function retrieveAssets() {
 
 
 };
+async function retrieveData(asset) {
+    await assetDataServices.getForType(asset.assetTypeId)
+        .then((response) => {
+            // console.log(response.data);
+            asset.dataFields = response.data;
+        })
+        .catch((e) => {
+            message.value = e.response.data.message;
+        });
+}
 async function retrieveMake(asset) {
     await makeServices.get(asset.makeId)
         .then((response) => {
-
+            if(!makes.value.includes(response.data)){
+                makes.value.push(response.data)
+            }
+            if (!displayedMakes.value.includes(response.data) && !asset.archived) {
+                displayedMakes.value.push(response.data);
+            }
             asset.make = response.data.make;
-            console.log(response.data.name)
+            // console.log(response.data.name)
         })
         .catch((e) => {
             message.value = e.response.data.message;
@@ -226,9 +340,15 @@ async function retrieveModel(asset) {
     console.log(asset)
     await modelServices.get(asset.modelId)
         .then((response) => {
-
+            if(!models.value.includes(response.data)){
+                models.value.push(response.data)
+                console.log(models.value)
+            }
+            if (!displayedModels.value.includes(response.data) && !asset.archived) {
+                displayedModels.value.push(response.data);
+            }
             asset.model = response.data.model;
-            console.log(response.data.name);
+            // console.log(response.data.name);
         })
         .catch((e) => {
             message.value = e.response.data.message;
@@ -240,38 +360,51 @@ async function retriveType(asset) {
     await typeServices.get(asset.assetTypeId)
         .then((response) => {
             asset.assetType = response.data.name;
-            console.log("Asset Type is " + asset.assetType)
+            types.value.push(response.data);
+            if (asset.archived == false) {
+                displayedTypes.value.push(response.data)
+            }
+            // console.log("Asset Type is " + asset.assetType);
+        })
+        .catch((e) => {
+            message.value = e.response.data.message;
+        })
+};
+
+async function retrieveDataFieldForType(asset) {
+    await assetDataServices.getForType(asset.assetTypeId)
+        .then((response) => {
+            dataFieldMap.value.set(asset.assetTypeId, response.data)
         })
         .catch((e) => {
             message.value = e.response.data.message;
         })
 
-};
-async function setFullName(user) {
-    user.fullName = user.fName + " " + user.lName;
 }
 
 
 onMounted(
     async () => {
         await retrieveAssets();
+        filter()
         // await retrive();
-        
+
     });
 
 
 
 </script>
+
 <script>
 export default {
     data() {
         return {
             headers: [
 
-                { title: 'Asset Type', align: 'start', key: 'assetType' , width: '30%' },
-                { title: 'Make', align: 'left', key: 'make', width: '25%' },
+                { title: 'Asset Type', align: 'start', key: 'assetType', width: '30%' },
+                { title: 'Make', align: 'left', key: 'make', width: '20%' },
                 { title: 'Model', align: 'left', key: 'model', sortable: false, width: '25%' },
-                { title: 'Archive Asset', align: 'center', key: 'archive', sortable: false, width: '5%' },
+                { title: 'Archive Asset', align: 'middle', key: 'archive', sortable: false, width: '10%' },
             ],
             roleChoices: [
 
@@ -281,8 +414,10 @@ export default {
                 'inactive',
             ],
             filterCats: [
-                { title: "Departments" },
-                { title: "Role Type" },
+                { title: "Asset Type" },
+                { title: "Make" },
+                { title: "Model" },
+
             ],
 
 
@@ -290,9 +425,9 @@ export default {
     }
 };
 </script>
-<style>
-    
-</style>
+
+<style></style>
+
 <template>
     <v-snackbar v-model="snackbar">
         No results for {{ keyword }}
@@ -303,103 +438,96 @@ export default {
         </template>
     </v-snackbar>
     <div>
-        
-   
-        
+
+
+
         <!-- <v-toolbar color="#801529" dense :elevation="8" class="pa-3">
             <v-toolbar-title>Users</v-toolbar-title> -->
-            
-    
-        <v-card
-        class="mx-auto pa-6"
-        flat
-        max-width="1250px">
-            <v-app-bar  class="pa-6 mx-auto" color="white" density="prominent" height="15" :elevation="2" flat>
-        
+
+
+        <v-card class="mx-auto pa-6" flat max-width="1250px">
+            <v-app-bar class="pa-6 mx-auto" color="white" density="prominent" height="15" :elevation="2" flat>
+
+                <!-- <v-app-bar-title>General Asset List</v-app-bar-title> -->
                 <v-app-bar-title>General Asset List</v-app-bar-title>
-                <v-text-field class="mx-auto" bg-color="white" v-model="keyword"  prepend-inner-icon="mdi-magnify" label="Search by name or ID"
-                    variant="outlined" density="compact" single-line rounded
-                    @click:prepend-inner="searchUser()" v-on:keyup.enter="searchUser()">
+
+                <v-text-field class="mx-auto" bg-color="white" v-model="keyword" prepend-inner-icon="mdi-magnify"
+                    label="Search by name or ID" variant="outlined" density="compact" single-line rounded
+                    @click:prepend-inner="filter()" v-on:keyup.enter="filter()">
                 </v-text-field>
-            <v-menu :close-on-content-click="false"
-                    
-                >
-                <template v-slot:activator="{ props }">
-                    <v-btn class="mx-6" height="40" v-bind="props" color="#811429" variant="elevated">
-                        Filters
-                    </v-btn>
-                </template>
-                <v-card min-width="300">
-                    <v-list>
-                        <v-list-item v-for="(item, index) in filterCats" :key="index">
-                            <v-select v-if="item.title == 'Departments'" v-model="selectedDepartments" label="Department"
-                                :items="departments" item-title="name" @update:modelValue="filter()" multiple>
-                            </v-select>
-                            <v-select v-model="selectedRoles" v-if="item.title == 'Role Type'" @update:modelValue="filter()" label="Role Type" :items="roles"
-                                multiple>
-                            </v-select>
+                <v-menu :close-on-content-click="false">
 
-                        </v-list-item>
-                    </v-list>
-                </v-card>
-            </v-menu>
-       
-    
-    </v-app-bar>
-    
+                    <template v-slot:activator="{ props }">
+                        <v-btn class="mx-6" height="40" v-bind="props" color="#811429" variant="elevated">
+                            Filters
+                        </v-btn>
+                    </template>
 
-  
-    <v-card class="pa-6 mx-6">
-      
-      
-        <v-card-item max-width="1250px" location="center">
-        <v-data-table-virtual :items=displayedAssets :headers=headers density="comfortable" fixed-header>
+                    <v-card min-width="300" class="mx-auto">
+                        <v-checkbox class="pa-3" v-model="showArchvied" label="Show Archived"
+                            @update:modelValue="filter()">
+
+                        </v-checkbox>
+                        <v-list>
+                            <v-list-item v-for="(item, index) in filterCats" :key="index">
+                                <v-select v-if="item.title == 'Asset Type'" v-model="selectedTypes" label="Type"
+                                    :items="displayedTypes" item-title="name" @update:modelValue="filter()" multiple>
+                                </v-select>
+                                <v-autocomplete v-model="selectedMakes" v-if="item.title == 'Make'"
+                                    @update:modelValue="filter()" label="Make" item-title="make" :items="displayedMakes" multiple>
+                                </v-autocomplete>
+                                <v-autocomplete v-model="selectedModels" v-if="item.title == 'Model'"
+                                    @update:modelValue="filter()" label="Model" item-title="model" :items="displayedModels" multiple>
+                                </v-autocomplete>
+
+                            </v-list-item>
+                        </v-list>
+                    </v-card>
+                </v-menu>
 
 
-            <template v-slot:item.archive="{ item }">
-               <v-switch
-                v-model="item.archived"
-                @update:modelValue="archive(item)"
-                >
-                
-               </v-switch> 
-               
-            </template>
-
-        </v-data-table-virtual>
-        </v-card-item>
-    </v-card>
-</v-card>
+            </v-app-bar>
 
 
-</div>
+            <v-card class="pa-6 mx-6">
 
-    <v-overlay
-        v-model="ArchiveChangeConfirm"
-        class="align-center justify-center"
-      >
-        <v-card class="pa-6">
-            <v-card-title>Confirm change of {{ archivingAsset.make }} {{ archivingAsset.model }} archive status to {{ archivingAsset.archived }}</v-card-title>
-            <v-card-actions>
-            <v-btn @click="archiveConfirm()"
-            class="mx-6"
-            variant="flat"
-            color="green"
-            min-width="150"
-            min-height="40"
-            >
-                Confirm
-            </v-btn>
-            <v-btn
-            @click="cancelArchive()"
-            class="mx-6"
-            variant="outlined"
-            min-width="150"
-            min-height="40"
-            >
-                Cancel
-            </v-btn>
-        </v-card-actions>
+
+                <v-card-item max-width="1250px" location="center">
+                    <v-data-table-virtual :items=displayedAssets :headers=headers density="comfortable" fixed-header>
+
+
+                        <template v-slot:item.archive="{ item }">
+                            <v-checkbox v-model="item.archived" @update:modelValue="archive(item)">
+
+                            </v-checkbox>
+
+                        </template>
+
+
+                    </v-data-table-virtual>
+                </v-card-item>
+            </v-card>
         </v-card>
-      </v-overlay>
-</template>
+
+
+    </div>
+
+    <v-overlay v-model="ArchiveChangeConfirm" class="align-center justify-center">
+        <v-card class="pa-6">
+            <v-card-title>Confirm change of {{ selectedAsset.model }} {{ selectedAsset.make }} to {{
+        selectedAsset.archived }}</v-card-title>
+            <v-card-actions>
+                <v-btn @click="archiveConfirm()" class="mx-6" variant="flat" color="green" min-width="150"
+                    min-height="40">
+                    Confirm
+                </v-btn>
+                <v-btn @click="cancelArchive()" class="mx-6" variant="outlined" min-width="150" min-height="40">
+                    Cancel
+                </v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-overlay>
+    </template>
+
+
+    
