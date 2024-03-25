@@ -102,34 +102,43 @@ onMounted(async () => {
       <h4>{{ message }}</h4>
       <br />
 
-      <v-form ref="form" v-model="valid" lazy validation>
+     
 
-        <v-container fluid>
+      <v-form ref="form" v-model="valid" lazy validation>
+        
           <v-radio-group
           v-model="inline"
           inline
           >
             <v-radio
+              color="indigo"
               label="person"
               value="person"
             ></v-radio>
             <v-radio
+               color="indigo"
               label="building"
               value="building"
             ></v-radio>
-          </v-radio-group>
-        </v-container>
+            </v-radio-group>
+        
+       
 
         <v-responsive
         max-width="800">
       
-        <v-row>
+        <v-row>        
           <v-col
           cols="12"
           sm="6"
         >
-        <v-select class="select" :items=departments v-model="saveInfo.AssetType"  item-value="id" item-title="name" label="AssetType">
-        </v-select> </v-col>
+        <v-text-field
+          v-model="saveInfo.AssetType"
+          id="model"
+          :counter="50"
+          label="Asset Type "
+          required
+        ></v-text-field> </v-col>
         <v-col
           cols="12"
           sm="6"
@@ -214,12 +223,4 @@ onMounted(async () => {
     </v-container>
   </div>
 </template>
-<style scoped>
 
-
-.select {
-      max-width: 400px;
-      
-    }
-
-</style>
