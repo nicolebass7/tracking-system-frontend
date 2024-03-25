@@ -62,11 +62,14 @@ onMounted(() => {
       <v-spacer></v-spacer>
       <div v-if="user">
 
-        <!-- <v-btn v-if="user.roleType=='admin'" class="mx-2"  "{ name: 'Accommodations Background' }"> Asset </v-btn>
-        <v-btn v-if="user.roleType=='admin'" class="mx-2" :to="{ name: 'request' }"> Reports </v-btn>
-        <v-btn v-if="user.roleType=='admin'" class="mx-2" :to="{ name: 'addNewUser' }"> addNewUser </v-btn>
-        <v-btn v-if="user.roleType=='admin'" class="mx-2" :to="{ name: 'editUser' }"> editUser </v-btn> -->
-        
+        <v-btn v-if="user.roleType=='admin'" class="mx-2" :to="{ name: 'AssetList' }"> Specific Asset </v-btn>
+        <v-btn v-if="user.roleType=='admin'" class="mx-2" :to="{ name: 'GeneralAsset' }"> General Asset </v-btn>
+        <v-btn v-if="user.roleType=='admin'" class="mx-2" :to="{ name: 'adminMaintainUsers' }"> Maintain Users </v-btn>
+        <v-btn v-if="user.roleType=='admin'" class="mx-2" :to="{ name: 'PersonList' }"> Persons List </v-btn>
+        <v-btn v-if="user.roleType=='manager'" class="mx-2" :to="{ name: 'AssetList' }"> Specific Asset </v-btn>
+        <v-btn v-if="user.roleType=='manager'" class="mx-2" :to="{ name: 'GeneralAsset' }"> General Asset </v-btn>
+        <v-btn v-if="user.roleType=='manager'" class="mx-2" :to="{ name: 'adminMaintainUsers' }"> Maintain Users </v-btn>
+        <v-btn v-if="user.roleType=='manager'" class="mx-2" :to="{ name: 'PersonList' }"> Persons List </v-btn>
 
       </div>
       <v-menu bottom min-width="200px" rounded offset-y v-if="user">

@@ -55,7 +55,7 @@ async function saveUser() {
     .then((response) => {
       addUser.value.id = response.data.id;
       console.log("add " + response.data);
-      router.push({name: "AdminHomePage"})
+      router.push({name: "adminMaintainUsers"})
       
       
     })
@@ -66,7 +66,7 @@ async function saveUser() {
 
 
 const cancel = () => {
-  router.push({ name: "AdminHomePage" });
+  router.push({ name: "adminMaintainUsers" });
 };
 
 

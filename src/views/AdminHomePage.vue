@@ -9,10 +9,19 @@ const tutorials = ref([]);
 const user = Utils.getStore("user");
 
 function directpage(name){
-  if(name == 'Add Users'){
-    router.push({path: "addNewUser"})
-  }
+  if(name === 'Add Users'){
+    router.push({ path: "addNewUser" });
+  } else if (name === 'Maintain Users') {
+    router.push({ path: "adminMaintainUsers" });
+  } else if (name === 'Specific Assets'){
+    router.push({ path: "AssetList"});
+  } else if (name === 'Person List'){
+    router.push({ path: "PersonList" });
+}else if (name === 'General Assets'){
+    router.push({ path: "GeneralAsset" });
 }
+}
+
 </script>
 
 <template>
@@ -32,6 +41,7 @@ function directpage(name){
         <v-row justify="center">
           <v-col v-for="(button, index) in buttons.slice(0, 2)" :key="index" cols="12" md="6">
             <v-btn
+            @click = directpage(button) 
             color="primary"
             width="300px"
               size = "x-large"
@@ -45,7 +55,7 @@ function directpage(name){
         <v-row justify="center">
           <v-col v-for="(button, index) in buttons.slice(2)" :key="index" cols="12" md="6">
             <v-btn
-            @click = directpage(button)
+            @click = directpage(button) 
             color="primary"
             width="300px"
               size= "x-large"
@@ -65,7 +75,7 @@ function directpage(name){
 export default {
   data() {
     return {
-      buttons: ['Asset', 'Reports', 'Add Users', 'Edit Users']
+      buttons: ['Specific Assets','General Assets','Person List', 'Maintain Users', 'Reports']
     };
   }
 };

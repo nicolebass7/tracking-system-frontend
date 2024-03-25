@@ -1,12 +1,19 @@
 import { createRouter, createWebHistory } from "vue-router";
 
 import Login from "./views/Login.vue";
-
+import AssetList from "./views/AssetList.vue"
 import AdminMaintainUsers from "./views/AdminMaintainUsers.vue"
 import AdminHomePage from "./views/AdminHomePage.vue";
 import ManagementHomePage from "./views/ManagementHomePage.vue";
 import UserHomePage from "./views/UserHomePage.vue";
 import addNewUser from "./views/addNewUser.vue";
+import GeneralAsset from "./views/GeneralAsset.vue"
+
+import addAsset from "./views/addAsset.vue";
+
+import PersonHistory from "./views/PersonHistory.vue";
+import PersonList from "./views/PersonList.vue";
+
 import checkoutAsset from "./views/checkoutAsset.vue";
 
 const router = createRouter({
@@ -25,9 +32,20 @@ const router = createRouter({
       component: AdminMaintainUsers,
     },
     {
+      path: "/AssetList",
+      name: "AssetList",
+      component: AssetList,
+    },
+    {
       path: "/AdminHomePage",
       name: "AdminHomePage",
       component: AdminHomePage,
+
+    },
+    {
+      path: "/GeneralAsset",
+      name: "GeneralAsset",
+      component: GeneralAsset,
 
     },
     {
@@ -46,13 +64,27 @@ const router = createRouter({
     name: "addNewUser",
     component: addNewUser,
     props: true,
+
+  },
+  {
+    path: "/addAsset",
+    name: "addAsset",
+    component: addAsset,
   },
 
-  {
-    path: "/checkoutAsset",
-    name: "checkoutAsset",
-    component: checkoutAsset,
-  },
+    {
+      path: "/PersonHistory:id",
+      name: "PersonHistory",
+      component: PersonHistory,
+      props: true,
+    },
+
+    {
+      path: "/PersonList",
+      name: "PersonList",
+      component: PersonList,
+      props: true,
+    },
 
     
   ],   

@@ -7,6 +7,21 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 const tutorials = ref([]);
 const user = Utils.getStore("user");
+
+function directpage(name){
+
+  if(name === 'Add Users'){
+    router.push({ path: "addNewUser" });
+  } else if (name === 'Maintain Users') {
+    router.push({ path: "adminMaintainUsers" });
+  } else if (name === 'Specific Assets'){
+    router.push({ path: "AssetList"});
+  } else if (name === 'Person List'){
+    router.push({ path: "PersonList" });
+} else if (name === 'General Assets'){
+    router.push({ path: "GeneralAsset" })
+}
+}
 </script>
 
 <template>
@@ -26,6 +41,7 @@ const user = Utils.getStore("user");
         <v-row justify="center">
           <v-col v-for="(button, index) in buttons.slice(0, 2)" :key="index" cols="12" md="6">
             <v-btn
+            @click = directpage(button)
             color="primary"
             width="300px"
               size = "x-large"
@@ -39,6 +55,7 @@ const user = Utils.getStore("user");
         <v-row justify="center">
           <v-col v-for="(button, index) in buttons.slice(2)" :key="index" cols="12" md="6">
             <v-btn
+            @click = directpage(button)
             color="primary"
             width="300px"
               size= "x-large"
@@ -57,8 +74,8 @@ const user = Utils.getStore("user");
 <script>
 export default {
   data() {
-    return {
-      buttons: ['Assets', 'Maintenance', 'Person List', 'Maintain Users','Reports']
+    return{
+      buttons: ['Specific Assets', 'General Assets', 'Person List', 'Maintain Users', 'Reports']
     };
   }
 };
