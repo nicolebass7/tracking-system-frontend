@@ -295,6 +295,12 @@ async function retrieveAssetData(typeId, generalAsset) {
 
 }
 
+const viewDetails = (specificAsset) => {
+    //console.log(person)
+    router.push({name: "ViewEditAsset", params: { id: specificAsset.id}});
+}
+
+
 
 onMounted(
     async () => {
@@ -413,10 +419,11 @@ export default {
         <v-data-table-virtual :items=displayedAssets :headers=headers density="comfortable" fixed-header>
 
           <template v-slot:item.edit>
-                <v-btn @click="viewUser(user)" prepend-icon="mdi-pencil">
+                <v-btn @click="viewDetails(item)" prepend-icon="mdi-pencil">
 
                 </v-btn>
             </template>
+            
             <template v-slot:item.archive="{ item }">
                <v-switch
                 v-model="item.archived"

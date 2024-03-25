@@ -2,11 +2,14 @@
 import { ref, onMounted } from "vue";
 import Utils from "../config/utils.js";
 import { useRouter } from "vue-router";
+import buildingServices from "../services/buildingServices";
+import personServices from "../services/personServices.js";
 
 const router = useRouter();
 const valid = ref(false);
 const user = Utils.getStore("user");
-//const departments = ref([]);
+const buildings = ref([]);
+const persons = ref([]);
 const message = ref("");
 console.log('user', user.userId);
 
@@ -17,25 +20,33 @@ const checkoutAsset = ref({
   endDate: "",
   assetSerialNum:"",
   person:"",
-  building:"",
+  buildingName:"",
   room:"",
   
   
 });
 
-// async function getAllDepartments(){
-//   await departmentServices.getAll()
-//   .then((response) => {
-//     departments.value = response.data;
+async function getAllPeople(){
+  await personServices.getAll()
+  .then((response) => {
+    persons.value = response.data;
+    persons.value.forEach(async element => {
+                //console.log(element);
+                await setFullName(element);
+                
+            });
    
      
-//     console.log(response.data);
-//     })
-//     .catch((e) => {
-//       message.value = e.response.data.message;
-//     });
-// }
+    console.log(response.data);
+    })
+    .catch((e) => {
+      message.value = e.response.data.message;
+    });
+}
 
+async function setFullName(person) {
+    person.fullName = person.fName + " " + person.lName;
+}
 
 async function saveInfo() {
     const data = {
@@ -43,7 +54,7 @@ async function saveInfo() {
     startDate: checkoutAsset.value.startDate,
     endDate: checkoutAsset.value.endDate,
     person: checkoutAsset.value.person,
-    building: checkoutAsset.value.building,
+    building: checkoutAsset.value.buildingName,
     room: checkoutAsset.value.room
 
   };
@@ -70,6 +81,20 @@ const cancel = () => {
 };
 
 
+async function getAllBuildings(){
+  await buildingServices.getAll()
+  .then((response) => {
+    buildings.value = response.data;
+   
+     
+    console.log(response.data);
+    })
+    .catch((e) => {
+      message.value = e.response.data.message;
+    });
+}
+
+
 const tx = document.getElementsByTagName("textarea");
 for (let i = 0; i < tx.length; i++) {
   tx[i].setAttribute("style", "height:" + (tx[i].scrollHeight) + "px;overflow-y:hidden;");
@@ -82,11 +107,24 @@ function OnInput() {
   this.style.height = (this.scrollHeight) + "px";
 }
 
+async function RadioButton() {
+  if (person.checked) {
+    building.disabled = true;
+    person.disabled = false;
+    console.log(person.data)
+  } else {
+    person.disabled = true;
+    building.disabled = false;
+  }
+}
 
 
 onMounted(async () => {
   user.value = Utils.getStore("user");
-  //await getAllDepartments();
+  await getAllBuildings();
+  await getAllPeople();
+  
+  await RadioButton();
   
 });
 </script>
@@ -100,15 +138,17 @@ onMounted(async () => {
 
       <br />
       <h4>{{ message }}</h4>
+      <h1>person:{{ person }}</h1>
       <br />
 
      
 
       <v-form ref="form" v-model="valid" lazy validation>
-        
+  
+     
           <v-radio-group
-          v-model="inline"
           inline
+          v-mpdel="person"
           >
             <v-radio
               color="indigo"
@@ -127,7 +167,9 @@ onMounted(async () => {
         <v-responsive
         max-width="800">
       
-        <v-row>        
+        <v-row>    
+          
+          
           <v-col
           cols="12"
           sm="6"
@@ -176,24 +218,16 @@ onMounted(async () => {
           cols="12"
           sm="6"
         >
-        <v-text-field
-          v-model="saveInfo.person"
-          id="name"
-          :counter="50"
-          label="Person"
-          required
-        ></v-text-field></v-col>
+        <v-autocomplete
+        :items=persons v-model="checkoutAsset.person"  item-value="id" item-title="name" label="Person"></v-autocomplete>
+        </v-col>
         <v-col
           cols="12"
           sm="6"
         >
-        <v-text-field
-          v-model="saveInfo.building"
-          id="name"
-          :counter="50"
-          label="Building"
-          required
-        ></v-text-field></v-col>
+        <v-autocomplete
+        :items=buildings v-model="checkoutAsset.buildingName"  item-value="id" item-title="name" label="Building"></v-autocomplete>
+        </v-col>
         <v-col
           cols="12"
           sm="6"
