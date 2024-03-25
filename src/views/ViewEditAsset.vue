@@ -2,12 +2,22 @@
 import { ref, onMounted } from "vue";
 import SpecificAssetServices from "../services/specificAssetServices";
 import { useRouter } from "vue-router";
+import logMaintenanceServices from "../services/logMaintenanceServices";
 
 const router = useRouter();
 const valid = ref(false);
 const specificAssets = ref({});
 const message = ref({});
 const tab = ref(null)
+const maintenance = ref({
+  id: null,
+  name: "",
+  date: "",
+  type: "",
+  comments: "",
+
+  
+});
 
 const props = defineProps({
   id: {
@@ -16,7 +26,7 @@ const props = defineProps({
 });
 
 
-const back = () => {
+const cancel = () => {
   router.push({ name: "AssetList" });
 };
 
@@ -27,6 +37,7 @@ async function retrieveSpecificAsset(){
     retrieveAsset(asset.id);
     retrieveMake(asset.makeId);
     retrieveModel(asset.modelId);
+    // retrieveMaintenance(asset.specificAssetId);
     console.log("here: ", response.data);
   })
   .catch((e) => {
@@ -70,6 +81,45 @@ async function retrieveModel(modelId, asset) {
 
 }
 
+// async function retrieveMaintenance(specificAssetId, asset) {
+//     await logMaintenanceServices.get(specificAssetId)
+//         .then((response) => {
+//             asset.specificAssetId = response.data.specificAssetId;
+//         })
+//         .catch((e) => {
+//             message.value = e.response.data.message;
+//         });
+
+
+// }
+
+
+async function Save() {
+    const data = {
+    name: maintenance.value.name,
+    date: maintenance.value.date,
+    type: maintenance.value.type,
+    comments: maintenance.value.comments,
+  
+
+  };
+
+    console.log('Save', maintenance)
+    console.log('data', data)
+
+  await logMaintenanceServices.create(data)
+    .then((response) => {
+      maintenance.value.id = response.data.id;
+      console.log("add " + response.data);
+      router.push({name: "ViewEditAsset"})
+      
+      
+    })
+    .catch((e) => {
+      message.value = e.response.data.message;
+    });
+};
+
 
 
 onMounted(async () => {
@@ -79,9 +129,9 @@ onMounted(async () => {
 
 <template>
   <div>
-    <v-container>
+    <v-container fluid>
       <v-toolbar>
-        <v-toolbar-title>{{ make.name }} {{ model.name }} </v-toolbar-title>
+        <v-toolbar-title>{{ specificAssets.make }} {{ specificAssets.model }} </v-toolbar-title>
       </v-toolbar>
       <br />
       
@@ -92,7 +142,8 @@ onMounted(async () => {
           bg-color="primary"
         >
           <v-tab value="one">Maintenance</v-tab>
-          <v-tab value="two">More Details</v-tab>
+          <!-- <v-tab value="two">Maintenance History</v-tab>
+          <v-tab value="three">More Details</v-tab> -->
         </v-tabs>
 
         <v-card-text>
@@ -102,37 +153,128 @@ onMounted(async () => {
           <v-responsive
         max-width="800">
 
-        <v-row>
-      
-          <v-col
-          cols="12"
-          sm="6">
+
+        
+  <v-container fluid>
+         <v-row>
+               
+             <v-col
+              cols="2"
+              >
+            <v-checkbox
+            v-model="maintenance.type"
+            color="info"
+            label="Fixed"
+            value="Fixed"
+            ></v-checkbox></v-col>
+            <v-col
+              cols="2"
+              >
+            <v-checkbox
+              v-model="maintenance.type"
+              color="info"
+              label="Upgraded"
+              value="Upgraded"
+             ></v-checkbox>
+            </v-col> 
+            <v-col
+          cols="8"
+          sm="4">
+       
           <v-text-field
+            v-model="maintenance.date"
             label="Serviced Date:"
             placeholder="02/12/2024"
+            clearable
           ></v-text-field>
           </v-col>
           <v-col
-          cols="12"
-          sm="6">
+          cols="6"
+          sm="4"
+          >
           <v-text-field
+            v-model="maintenance.name"
             label="Serviced By:"
             placeholder="Nicole Bass"
           ></v-text-field>
             </v-col>
+             <v-spacer></v-spacer>
+            <v-col
+          cols="12"
+          sm="4">
+          <span>Comments:  </span>
+          <p>{{ comments }}</p>
+          <textarea class= "wrap" id="comments" v-model="maintenance.comments" placeholder="Type comments here..."></textarea></v-col>
+        </v-row><br>
+      </v-container>
+          <v-btn
+          color="green"
+          class="mr-4"
+          @click="Save" 
+        >
+          Save
+        </v-btn>
+     
+          <v-btn color="white" class="mr-4" @click="cancel()"> Cancel </v-btn>
+         
+          </v-responsive>
+        </v-card-text>
+     
+      </v-window-item>
+   
+      <!-- <v-window-item value="two">
+        <v-container fluid>
+        <v-col
+              cols="2"
+              >
+            <v-checkbox
+       
+            color="info"
+            label="Fixed"
+            value="Fixed"
+            ></v-checkbox></v-col>
+            <v-col
+              cols="2"
+              >
+            <v-checkbox
+             
+              color="info"
+              label="Upgraded"
+              value="Upgraded"
+             ></v-checkbox>
+            </v-col></v-container>
+            <v-col
+          cols="8"
+          sm="4">
+       
+          <v-text-field
+          
+            label="Serviced Date:"
+            placeholder="02/12/2024"
+            clearable
+          ></v-text-field>
+          </v-col>
+          <v-col
+          cols="6"
+          sm="4"
+          >
+          <v-text-field
+          
+            label="Serviced By:"
+            placeholder="Nicole Bass"
+          ></v-text-field>
+            </v-col>
+             <v-spacer></v-spacer>
             <v-col
           cols="12"
           sm="6">
           <span>Comments:  </span>
           <p>{{ comments }}</p>
-          <textarea class= "wrap" id="grievances" placeholder="Type comments here..."></textarea></v-col>
-          </v-row>
-          </v-responsive>
-        </v-card-text>
-          
-      </v-window-item>
+          <textarea class= "wrap" id="comments"  placeholder="Type comments here..."></textarea></v-col>
+              
+            </v-window-item>
             
-            <v-window-item value="two">
+            <v-window-item value="three">
 
               <v-card-text>
           <v-responsive
@@ -195,15 +337,16 @@ onMounted(async () => {
           </v-responsive>
         </v-card-text>
               
-            </v-window-item>
-
+            </v-window-item> -->
           </v-window>
         </v-card-text>
       </v-card>   
      
     
       <br />
-        <v-btn color="error" class="mr-4" @click="back()"> Back </v-btn>
+     
+        
+  
      
     </v-container>
     

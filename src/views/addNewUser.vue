@@ -138,7 +138,7 @@ onMounted(async () => {
 
 
 
-<v-select class="select" :items="['Admin','Manager','User']"  v-model="addUser.roleType" label="Select Role Type">
+<v-select class="select" :items="['admin','manager','user']"  v-model="addUser.roleType" label="Select Role Type">
  
 </v-select>
 
