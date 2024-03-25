@@ -10,6 +10,7 @@ const valid = ref(false);
 const persons = ref({});
 const assetStatus = ref({});
 const specificAsset = ref({});
+const asset = ref({});
 const message = ref({});
 const tab = ref(null)
 
@@ -41,15 +42,17 @@ async function retrieveAssetStatus(){
       console.log('assetStatus', response);
       console.log('test',assetStatus.value[0].specificAsset.status);
 
-      assetStatus.value.forEach(async asset => {
-        if(assetStatus.value.specificAsset.status == "checked-out") {
-          await retrieveMake();
-          await retrieveModel();
-          displayCheckedOutAsset.value.push(asset);
+      assetStatus.value.specificAsset.forEach(async asset => {
+        if(asset.status == "checked-out") {
+
+          console.log('test',asset.status);
+          // await retrieveMake();
+          // await retrieveModel();
+          // displayCheckedOutAsset.value.push(asset);
         }
         console.log(asset);
 
-        if(assetStatus.value.specificAsset.status  == "checked-in") {
+        if(asset.status  == "checked-in") {
           await retrieveMake();
           await retrieveModel();
           displayCheckInAsset.value.push(asset);
