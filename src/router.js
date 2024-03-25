@@ -14,7 +14,7 @@ import addAsset from "./views/addAsset.vue";
 import PersonHistory from "./views/PersonHistory.vue";
 import PersonList from "./views/PersonList.vue";
 
-import ViewEditAsset from "./views/ViewEditAsset.vue";
+import checkoutAsset from "./views/checkoutAsset.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -78,6 +78,13 @@ const router = createRouter({
     path: "/addAsset",
     name: "addAsset",
     component: addAsset,
+  },
+
+  {
+    path: "/checkoutAsset",
+    name: "checkoutAsset",
+    component: checkoutAsset,
+    props: true,
   },
 
     {
