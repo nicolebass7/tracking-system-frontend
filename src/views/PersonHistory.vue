@@ -3,14 +3,14 @@ import { ref, onMounted } from "vue";
 import PersonServices from "../services/personServices";
 import { useRouter } from "vue-router";
 import assetStatusServices from "../services/assetStatusServices";
-import specificAssetServices from "../services/specificAssetServices";
+import assetServices from "../services/assetServices";
 
 const router = useRouter();
 const valid = ref(false);
 const persons = ref({});
 const assetStatus = ref({});
-const specificAsset = ref({});
-const asset = ref({});
+const displayCheckedOutAsset = ref([]);
+const displayCheckedInAsset = ref([]);
 const message = ref({});
 const tab = ref(null)
 
@@ -40,22 +40,25 @@ async function retrieveAssetStatus(){
   .then ((response) => {
       assetStatus.value = response.data;
       console.log('assetStatus', response);
-      console.log('test',assetStatus.value[0].specificAsset.status);
 
-      assetStatus.value.specificAsset.forEach(async asset => {
-        if(asset.status == "checked-out") {
+      assetStatus.value.forEach(async assetStatus => {
+        if(assetStatus.specificAsset.status == "checked-out") {
+           
+            assetStatus.fullName = assetStatus.specificAsset.asset.make.make + " " + assetStatus.specificAsset.asset.model.model;
+            displayCheckedOutAsset.value.push(assetStatus.fullName);  
 
-          console.log('test',asset.status);
-          // await retrieveMake();
-          // await retrieveModel();
-          // displayCheckedOutAsset.value.push(asset);
+           console.log("displayCheckout", displayCheckedOutAsset);
         }
-        console.log(asset);
 
-        if(asset.status  == "checked-in") {
-          await retrieveMake();
-          await retrieveModel();
-          displayCheckInAsset.value.push(asset);
+        if(assetStatus.specificAsset.status == "checked-in") {
+
+          const dateFromDb = assetStatus.checkin;
+          const dateForUi = new Date(dateFromDb).toLocaleDateString();
+          
+          assetStatus.fullName = assetStatus.specificAsset.asset.make.make + " " + assetStatus.specificAsset.asset.model.model + " " + "Checked-In date: " + dateForUi;
+          displayCheckedInAsset.value.push(assetStatus.fullName);  
+
+          console.log("displayCheckin", displayCheckedInAsset);
         }
       })
 
@@ -65,30 +68,6 @@ async function retrieveAssetStatus(){
     message.value = e.response.data.message;
   })
 };
-
-
-async function retrieveMake(makeId, asset) {
-    await makeServices.get(makeId)
-        .then((response) => {
-            asset.make = response.data.make;            
-        })
-        .catch((e) => {
-            message.value = e.response.data.message;
-        });
-
-
-}
-async function retrieveModel(modelId, asset) {
-    await modelServices.get(modelId)
-        .then((response) => {
-            asset.model = response.data.model;
-        })
-        .catch((e) => {
-            message.value = e.response.data.message;
-        });
-
-
-}
 
 
 onMounted(async () => {
@@ -112,18 +91,18 @@ onMounted(async () => {
           v-model="tab"
           bg-color="primary"
         >
-          <v-tab value="one">Current Assets</v-tab>
-          <v-tab value="two">Past Assets</v-tab>
+          <v-tab value="checkedOutAssets">Current Assets</v-tab>
+          <v-tab value="checkedInAssets">Past Assets</v-tab>
         </v-tabs>
 
         <v-card-text>
           <v-window v-model="tab">
-            <v-window-item value="one">
-              One
+            <v-window-item value="checkedOutAssets">
+              <v-list :items="displayCheckedOutAsset"></v-list>
             </v-window-item>
 
-            <v-window-item value="two">
-              Two
+            <v-window-item value="checkedInAssets">
+              <v-list :items="displayCheckedInAsset"></v-list>
             </v-window-item>
 
           </v-window>
