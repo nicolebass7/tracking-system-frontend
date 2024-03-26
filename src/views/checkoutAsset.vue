@@ -11,6 +11,7 @@ const user = Utils.getStore("user");
 const buildings = ref([]);
 const persons = ref([]);
 const message = ref("");
+const radios = ref(false);
 console.log('user', user.userId);
 
 const checkoutAsset = ref({
@@ -34,9 +35,16 @@ async function getAllPeople(){
                 //console.log(element);
                 await setFullName(element);
                 
+                
             });
-   
-     
+
+          persons.value.forEach(person =>{
+            displayedPersons.value.push(person);
+            
+          })
+          
+          
+     console.log("display",displayedPersons);
     console.log(response.data);
     })
     .catch((e) => {
@@ -107,24 +115,15 @@ function OnInput() {
   this.style.height = (this.scrollHeight) + "px";
 }
 
-async function RadioButton() {
-  if (person.checked) {
-    building.disabled = true;
-    person.disabled = false;
-    console.log(person.data)
-  } else {
-    person.disabled = true;
-    building.disabled = false;
-  }
-}
+
 
 
 onMounted(async () => {
+  radios.value = false;
   user.value = Utils.getStore("user");
   await getAllBuildings();
   await getAllPeople();
-  
-  await RadioButton();
+ 
   
 });
 </script>
@@ -138,18 +137,14 @@ onMounted(async () => {
 
       <br />
       <h4>{{ message }}</h4>
-      <h1>person:{{ person }}</h1>
       <br />
 
-     
+    
+        <v-form ref="form" v-model="valid" lazy validation>
 
-      <v-form ref="form" v-model="valid" lazy validation>
-  
-     
           <v-radio-group
-          inline
-          v-mpdel="person"
-          >
+          v-model="radios"
+          inline>
             <v-radio
               color="indigo"
               label="person"
@@ -161,18 +156,11 @@ onMounted(async () => {
               value="building"
             ></v-radio>
             </v-radio-group>
-        
        
-
-        <v-responsive
-        max-width="800">
-      
-        <v-row>    
-          
-          
+        <v-row>              
           <v-col
-          cols="12"
-          sm="6"
+          
+          sm="4"
         >
         <v-text-field
           v-model="saveInfo.AssetType"
@@ -182,8 +170,8 @@ onMounted(async () => {
           required
         ></v-text-field> </v-col>
         <v-col
-          cols="12"
-          sm="6"
+          
+          sm="4"
         >
         <v-text-field
           v-model="saveInfo.assetSerialNum"
@@ -193,8 +181,8 @@ onMounted(async () => {
           required
         ></v-text-field></v-col>
         <v-col
-          cols="12"
-          sm="6"
+          
+          sm="4"
         >
         <v-text-field
           v-model="saveInfo.startDate"
@@ -204,46 +192,50 @@ onMounted(async () => {
           required
         ></v-text-field></v-col>
         <v-col
-          cols="12"
-          sm="6"
+      
+          sm="4"
         >
         <v-text-field
           v-model="saveInfo.endDate"
           id="endDate"
           :counter="7"
           label="endDate" 
-          required
         ></v-text-field></v-col>
         <v-col
-          cols="12"
-          sm="6"
+          
+          sm="4"
         >
+      
+        <div v-if="radios == 'person'">
+          
         <v-autocomplete
         :items=persons v-model="checkoutAsset.person"  item-value="id" item-title="name" label="Person"></v-autocomplete>
+        </div>
         </v-col>
+        <div v-if="radios == 'building'">
         <v-col
           cols="12"
-          sm="6"
+          xxl="1000"
         >
         <v-autocomplete
-        :items=buildings v-model="checkoutAsset.buildingName"  item-value="id" item-title="name" label="Building"></v-autocomplete>
+        :items=buildings v-model="checkoutAsset.buildingName"  item-value="id" item-title="name"  label="Building"></v-autocomplete>
         </v-col>
-        <v-col
+        <v-col 
           cols="12"
-          sm="6"
+          
+          
         >
         <v-text-field
           v-model="saveInfo.room"
           id="name"
           :counter="50"
           label="Room"
-          required
         ></v-text-field></v-col>
-        </v-row>   </v-responsive>
-
+        </div>
+        </v-row> 
+      
    
         <v-btn
-          :disabled="!valid"
           color="green"
           class="mr-4"
           @click="saveInfo" 

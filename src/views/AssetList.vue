@@ -296,10 +296,14 @@ async function retrieveAssetData(typeId, generalAsset) {
 }
 
 const viewDetails = (specificAsset) => {
-    //console.log(person)
+    console.log(specificAsset)
     router.push({name: "ViewEditAsset", params: { id: specificAsset.id}});
 }
 
+const checkout = (specificAsset) => {
+    console.log(specificAsset)
+    router.push({name: "checkoutAsset", params: { id: specificAsset.id}});
+}
 
 
 onMounted(
@@ -323,7 +327,7 @@ export default {
                 { title: 'Status', align: 'center', key: 'status', sortable: false, width: '10%' },
 
                 { title: 'Check in/out', align: 'center', key: 'edit', sortable: false, width: '10%' },
-                { title: 'View Details', align: 'center', key: 'edit', sortable: false, width: '10%' },
+                { title: 'View Details', align: 'center', key: 'view', sortable: false, width: '10%' },
 
 
             ],
@@ -418,8 +422,13 @@ export default {
         <v-card-item max-width="1250px" location="center">
         <v-data-table-virtual :items=displayedAssets :headers=headers density="comfortable" fixed-header>
 
-          <template v-slot:item.edit>
+          <template v-slot:item.view>
                 <v-btn @click="viewDetails(item)" prepend-icon="mdi-pencil">
+
+                </v-btn>
+            </template>
+            <template v-slot:item.edit>
+                <v-btn @click="checkout(item)" prepend-icon="mdi-pencil">
 
                 </v-btn>
             </template>
