@@ -100,7 +100,14 @@ function filter() {
     };
     filterArchived();
     filterDisplayedModels();
+    removeDuplicates(displayedMakes);
+    removeDuplicates(displayedModels);
+    removeDuplicates(displayedTypes);
 };
+function removeDuplicates(list){
+    list.value = list.value.filter((v,i,a)=>a.findIndex(v2=>(v2.id===v.id))===i);
+
+}
 
 function filterArchived() {
 
@@ -112,7 +119,6 @@ function filterArchived() {
                 displayedAssets.value.splice(indx, indx >= 0 ? 1 : 0);
             }
         });
-        displayedTypes.value = [];
         types.value.forEach(type => {
             var included = false;
             displayedAssets.value.forEach(asset => {
@@ -120,15 +126,11 @@ function filterArchived() {
                     included = true;
                 }
             })
-
             if (included) {
-                console.log(type);
                 displayedTypes.value.push(type);
             }
 
-
         });
-        displayedMakes.value = [];
         makes.value.forEach(make => {
             var included = false;
             displayedAssets.value.forEach(asset => {
@@ -145,20 +147,25 @@ function filterArchived() {
 
         })
         
+
+        
     }
     else {
-        displayedTypes.value = [];
-        displayedMakes.value = [];
+        
         types.value.forEach(type => {
-            displayedTypes.value.push(type);
+            if(!displayedTypes.value.includes(type)){
+                displayedTypes.value.push(type);
+            }
         });
         makes.value.forEach(make => {
-            displayedMakes.value.push(make)
+            if(!displayedMakes.value.includes(make)){
+                displayedMakes.value.push(make)
+            }
         });
     }
 }
+
 function filterDisplayedModels(){
-    displayedModels.value = [];
         console.log(models.value);
         models.value.forEach(model => {
             console.log()
