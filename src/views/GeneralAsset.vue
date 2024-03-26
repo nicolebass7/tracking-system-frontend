@@ -116,7 +116,8 @@ function filterArchived() {
         displayedAssets.value.forEach(asset => {
             if (asset.archived == true) {
                 const indx = displayedAssets.value.findIndex(displayedAsset => displayedAsset == asset);
-                displayedAssets.value.splice(indx, indx >= 0 ? 1 : 0);
+                console.log("index is:" + indx)
+                displayedAssets.value.splice(indx, 1);
             }
         });
         types.value.forEach(type => {
@@ -270,6 +271,7 @@ async function archiveConfirm() {
 
         });
     ArchiveChangeConfirm.value = false;
+    filter()
 }
 
 async function cancelArchive() {
